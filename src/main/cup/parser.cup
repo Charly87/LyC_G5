@@ -4,6 +4,10 @@ import java_cup.runtime.*;
 
 class Parser;
 
+terminal CICLO;
+terminal WRITE;
+terminal IF;
+terminal ELSE;
 
 // Terminals
 terminal ASSIG;
@@ -13,27 +17,86 @@ terminal MULT;
 terminal DIV;
 terminal OPEN_BRACKET;
 terminal CLOSE_BRACKET;
+terminal OPEN_CURLY_BRACKET;
+terminal CLOSE_CURLY_BRACKET;
+terminal OP_MAYOR;
 terminal INTEGER_CONSTANT;
+terminal STRING_CONSTANT;
+terminal FLOAT_CONSTANT;
 terminal IDENTIFIER;
+terminal INT;
+terminal FLOAT;
+terminal STRING;
+terminal COLON;
+terminal COMMA;
+terminal INIT;
+
 
 // Non Terminals
+non terminal program;
 non terminal sentence;
+non terminal sentence_ciclo;
+non terminal sentence_write;
+non terminal sentence_if;
+non terminal sentence_ifelse;
+non terminal condition;
 non terminal assignment;
 non terminal expression;
 non terminal term;
 non terminal factor;
 
-// Start Symbol Definition
-start with sentence;
+non terminal block;
+non terminal blockDefinition;
+non terminal varDefinition;
+non terminal varDefinitionList;
+non terminal varType;
 
-sentence ::= assignment {: System.out.println("End"); :};
+// Start Symbol Definition
+start with program;
+
+//sentence ::= assignment {: System.out.println("End"); :};
+//assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); :};
+//expression ::= expression PLUS term {: System.out.println("+"); :};
+//expression ::= expression SUB term {: System.out.println("-"); :};
+//expression ::= term {: System.out.println("Expression = Term"); :};
+//term ::= term MULT factor {: System.out.println("*"); :};
+//term ::= term DIV factor {: System.out.println("/"); :};
+//term ::= factor {: System.out.println("Term = factor"); :};
+//factor ::= IDENTIFIER:id  {: System.out.println("Id: " + id); :};
+//factor ::= INTEGER_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
+//factor ::= OPEN_BRACKET expression CLOSE_BRACKET {: System.out.println("Factor = (Expression)"); :};
+
+
+program  ::= sentence {: System.out.println("End"); :};
+program  ::= program sentence {: System.out.println("Program Sentence"); :};
+
+sentence ::= block | assignment | sentence_ciclo | sentence_write | sentence_if | sentence_ifelse {: System.out.println("Sentence"); :};
+sentence_ciclo ::= CICLO OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("CICLO"); :};
+sentence_write ::= WRITE OPEN_BRACKET factor CLOSE_BRACKET {: System.out.println("WRITE"); :};
+sentence_if ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IF"); :};
+sentence_ifelse ::= sentence_if ELSE OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IFELSE"); :};
+
+block ::= INIT OPEN_CURLY_BRACKET blockDefinition CLOSE_CURLY_BRACKET {: System.out.println("Block"); :};
+blockDefinition ::= blockDefinition varDefinition {: System.out.println("Block List"); :};
+blockDefinition ::= varDefinition {: System.out.println("Block Variable Definition"); :};
+varDefinition::= varDefinitionList COLON varType {: System.out.println("Variable Definition"); :};
+varDefinitionList ::= varDefinitionList COMMA IDENTIFIER {: System.out.println("Variable Definition List"); :};
+varDefinitionList ::= IDENTIFIER {: System.out.println("Variable Definition List"); :};
+varType ::= FLOAT;
+varType ::= STRING;
+varType ::= INT;
+
+condition ::= IDENTIFIER OP_MAYOR IDENTIFIER{: System.out.println("Condition: ID > ID"); :};
 assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); :};
+
 expression ::= expression PLUS term {: System.out.println("+"); :};
-expression ::= expression SUB term {: System.out.println("-"); :};
-expression ::= term {: System.out.println("Expression = Term"); :};
-term ::= term MULT factor {: System.out.println("*"); :};
-term ::= term DIV factor {: System.out.println("/"); :};
-term ::= factor {: System.out.println("Term = factor"); :};
-factor ::= IDENTIFIER:id  {: System.out.println("Id: " + id); :};
-factor ::= INTEGER_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
-factor ::= OPEN_BRACKET expression CLOSE_BRACKET {: System.out.println("Factor = (Expression)"); :};
+expression ::= term;
+
+term ::= factor;
+
+factor ::= IDENTIFIER:id {: System.out.println("Id: " + id); :};
+factor ::= INTEGER_CONSTANT:constant {: System.out.println("Constant Int: " + constant ); :};
+factor ::= STRING_CONSTANT:constant {: System.out.println("Constant String: " + constant ); :};
+factor ::= FLOAT_CONSTANT:constant {: System.out.println("Constant Float: " + constant ); :};
+
+
