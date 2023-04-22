@@ -48,16 +48,17 @@ CloseCurlyBracket = "}"
 Letter = [a-zA-Z]
 Digit = [0-9]
 Symbol = "." | ";" | "+" | "-" | "*" | "/" | "-" | "_" | "¿" | "?" | "&" | "," | " " | \t | "@" | "%"
-Mayor = ">"
 
 WhiteSpace = {LineTerminator} | {Identation}
 Id = {Letter} ({Letter}|{Digit})*
 Const_Int = {Digit}+
 Const_String = \"({Letter}|{Digit}|{Symbol})*\"
 Const_Float = ({Digit}+"."{Digit}*) | ({Digit}*"."{Digit}+)
+Comment =  "*-"({Letter}|{Digit}|{Symbol})*"-*"
 
 Ciclo = "ciclo"
 Write = "write"
+Read = "read"
 If = "if"
 Else = "else"
 Int = "Int"
@@ -67,28 +68,36 @@ Comma = ","
 Colon = ":"
 Init = "init"
 
+AND = "&"
+OR = "||"
+NOT = "not"
+Mayor = ">"
+Minor = "<"
+MayorEqu = ">="
+MinorEqu = "<="
+Equ = "=="
+
 %%
 
 
 /* keywords */
 
 <YYINITIAL> {
-  /* Keywords */
-  {Ciclo}                                   { return symbol(ParserSym.CICLO, yytext()); }
-  {Write}                                   { return symbol(ParserSym.WRITE, yytext()); }
-  {If}                                      { return symbol(ParserSym.IF, yytext()); }
-  {Else}                                    { return symbol(ParserSym.ELSE, yytext()); }
-  {Int}                                     { return symbol(ParserSym.INT, yytext()); }
-  {Float}                                   { return symbol(ParserSym.FLOAT, yytext()); }
-  {String}                                  { return symbol(ParserSym.STRING, yytext()); }
-  {Comma}                                   { return symbol(ParserSym.COMMA, yytext()); }
-  {Colon}                                   { return symbol(ParserSym.COLON, yytext()); }
-  {Init}                                    { return symbol(ParserSym.INIT, yytext()); }
+    /* Keywords */
+    {Ciclo}                                   { return symbol(ParserSym.CICLO, yytext()); }
+    {Write}                                   { return symbol(ParserSym.WRITE, yytext()); }
+    {If}                                      { return symbol(ParserSym.IF, yytext()); }
+    {Else}                                    { return symbol(ParserSym.ELSE, yytext()); }
+    {Int}                                     { return symbol(ParserSym.INT, yytext()); }
+    {Float}                                   { return symbol(ParserSym.FLOAT, yytext()); }
+    {String}                                  { return symbol(ParserSym.STRING, yytext()); }
+    {Init}                                    { return symbol(ParserSym.INIT, yytext()); }
+    {Read}                                    { return symbol(ParserSym.READ, yytext()); }
 
-  /* identifiers */
-  {Id}                                      { return symbol(ParserSym.IDENTIFIER, yytext()); }
-  /* Constants */
-  {Const_Int}                               {
+    /* identifiers */
+    {Id}                                      { return symbol(ParserSym.IDENTIFIER, yytext()); }
+    /* Constants */
+    {Const_Int}                               {
                                                 try
                                                 {
                                                     Integer value = Integer.parseInt(yytext());
@@ -103,14 +112,14 @@ Init = "init"
                                                 }
                                             }
 
-  {Const_String}                            {
+    {Const_String}                            {
                                                 final String value = new String(yytext());
                                                 if (value.length() - 2 <= RANGO_STRING)
                                                     return symbol(ParserSym.STRING_CONSTANT, value);
                                                 else
                                                     throw new InvalidLengthException( "La constante [" + value + "] excede el largo permitido para un string. (Se obtuvo una cadena de tamaño " + value.length() + ", maximo permitido: " + RANGO_STRING + ")");
                                             }
-  {Const_Float}                             {
+    {Const_Float}                             {
                                                 Float value = Float.parseFloat(yytext());
                                                 if(Math.abs(value) <= RANGO_FLOAT)
                                                     return symbol(ParserSym.FLOAT_CONSTANT, yytext());
@@ -118,20 +127,34 @@ Init = "init"
                                                     throw new NumberFormatException("La constante [" + value + "] excede el tamaño permitido para un Float. Max permitido: " + RANGO_FLOAT + " Min permitido: -" + RANGO_FLOAT + ")");
                                             }
 
-  /* operators */
-  {Plus}                                    { return symbol(ParserSym.PLUS); }
-  {Sub}                                     { return symbol(ParserSym.SUB); }
-  {Mult}                                    { return symbol(ParserSym.MULT); }
-  {Div}                                     { return symbol(ParserSym.DIV); }
-  {Assig}                                   { return symbol(ParserSym.ASSIG); }
-  {OpenBracket}                             { return symbol(ParserSym.OPEN_BRACKET); }
-  {CloseBracket}                            { return symbol(ParserSym.CLOSE_BRACKET); }
-  {OpenCurlyBracket}                        { return symbol(ParserSym.OPEN_CURLY_BRACKET); }
-  {CloseCurlyBracket}                       { return symbol(ParserSym.CLOSE_CURLY_BRACKET); }
-  {Mayor}                                   { return symbol(ParserSym.OP_MAYOR); }
+    /* operators */
+    {Plus}                                    { return symbol(ParserSym.PLUS); }
+    {Sub}                                     { return symbol(ParserSym.SUB); }
+    {Mult}                                    { return symbol(ParserSym.MULT); }
+    {Div}                                     { return symbol(ParserSym.DIV); }
+    {Assig}                                   { return symbol(ParserSym.ASSIG); }
+    {OpenBracket}                             { return symbol(ParserSym.OPEN_BRACKET); }
+    {CloseBracket}                            { return symbol(ParserSym.CLOSE_BRACKET); }
+    {OpenCurlyBracket}                        { return symbol(ParserSym.OPEN_CURLY_BRACKET); }
+    {CloseCurlyBracket}                       { return symbol(ParserSym.CLOSE_CURLY_BRACKET); }
+    {Comma}                                   { return symbol(ParserSym.COMMA, yytext()); }
+    {Colon}                                   { return symbol(ParserSym.COLON, yytext()); }
 
-  /* whitespace */
-  {WhiteSpace}                             { /* ignore */ }
+    {AND}                                     { return symbol(ParserSym.OP_AND); }
+    {OR}                                      { return symbol(ParserSym.OP_OR); }
+    {NOT}                                     { return symbol(ParserSym.OP_NOT); }
+    {Mayor}                                   { return symbol(ParserSym.OP_MAYOR); }
+    {Minor}                                   { return symbol(ParserSym.OP_MINOR); }
+    {MayorEqu}                                { return symbol(ParserSym.OP_MAYOREQU); }
+    {MinorEqu}                                { return symbol(ParserSym.OP_MINOREQU); }
+    {Equ}                                     { return symbol(ParserSym.OP_EQU); }
+
+
+    /* whitespace */
+    {WhiteSpace}                              { /* ignore */ }
+
+    /* comment */
+    {Comment}                                 { /* ignore */ }
 }
 
 

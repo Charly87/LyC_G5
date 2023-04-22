@@ -8,6 +8,7 @@ terminal CICLO;
 terminal WRITE;
 terminal IF;
 terminal ELSE;
+terminal READ;
 
 // Terminals
 terminal ASSIG;
@@ -19,7 +20,6 @@ terminal OPEN_BRACKET;
 terminal CLOSE_BRACKET;
 terminal OPEN_CURLY_BRACKET;
 terminal CLOSE_CURLY_BRACKET;
-terminal OP_MAYOR;
 terminal INTEGER_CONSTANT;
 terminal STRING_CONSTANT;
 terminal FLOAT_CONSTANT;
@@ -31,12 +31,22 @@ terminal COLON;
 terminal COMMA;
 terminal INIT;
 
+terminal OP_AND;
+terminal OP_OR;
+terminal OP_NOT;
+terminal OP_MAYOR;
+terminal OP_MINOR;
+terminal OP_MAYOREQU;
+terminal OP_MINOREQU;
+terminal OP_EQU;
+
 
 // Non Terminals
 non terminal program;
 non terminal sentence;
 non terminal sentence_ciclo;
 non terminal sentence_write;
+non terminal sentence_read;
 non terminal sentence_if;
 non terminal sentence_ifelse;
 non terminal condition;
@@ -50,6 +60,9 @@ non terminal blockDefinition;
 non terminal varDefinition;
 non terminal varDefinitionList;
 non terminal varType;
+
+non terminal comparison;
+non terminal comparator;
 
 // Start Symbol Definition
 start with program;
@@ -70,9 +83,10 @@ start with program;
 program  ::= sentence {: System.out.println("End"); :};
 program  ::= program sentence {: System.out.println("Program Sentence"); :};
 
-sentence ::= block | assignment | sentence_ciclo | sentence_write | sentence_if | sentence_ifelse {: System.out.println("Sentence"); :};
+sentence ::= block | assignment | sentence_ciclo | sentence_write | sentence_if | sentence_ifelse | sentence_read {: System.out.println("Sentence"); :};
 sentence_ciclo ::= CICLO OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("CICLO"); :};
-sentence_write ::= WRITE OPEN_BRACKET factor CLOSE_BRACKET {: System.out.println("WRITE"); :};
+sentence_write ::= WRITE OPEN_BRACKET STRING_CONSTANT:constant CLOSE_BRACKET {: System.out.println("WRITE" + constant ); :};
+sentence_read ::= READ OPEN_BRACKET expression  CLOSE_BRACKET {: System.out.println("READ" ); :};
 sentence_if ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IF"); :};
 sentence_ifelse ::= sentence_if ELSE OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IFELSE"); :};
 
@@ -82,21 +96,27 @@ blockDefinition ::= varDefinition {: System.out.println("Block Variable Definiti
 varDefinition::= varDefinitionList COLON varType {: System.out.println("Variable Definition"); :};
 varDefinitionList ::= varDefinitionList COMMA IDENTIFIER {: System.out.println("Variable Definition List"); :};
 varDefinitionList ::= IDENTIFIER {: System.out.println("Variable Definition List"); :};
-varType ::= FLOAT;
-varType ::= STRING;
-varType ::= INT;
+varType ::= FLOAT | STRING | INT;
 
-condition ::= IDENTIFIER OP_MAYOR IDENTIFIER{: System.out.println("Condition: ID > ID"); :};
+condition ::= comparison;
+condition ::= condition OP_AND comparison;
+condition ::= condition OP_OR comparison;
+
+comparison ::= expression comparator expression;
+comparator ::= OP_MAYOR | OP_MINOR | OP_MAYOREQU| OP_MINOREQU| OP_EQU;
+
 assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); :};
+assignment ::= IDENTIFIER ASSIG STRING_CONSTANT {: System.out.println("String Assignment"); :};
 
 expression ::= expression PLUS term {: System.out.println("+"); :};
+expression ::= expression SUB term {: System.out.println("-"); :};
 expression ::= term;
 
+term ::= term MULT factor;
+term ::= term DIV factor;
 term ::= factor;
 
 factor ::= IDENTIFIER:id {: System.out.println("Id: " + id); :};
 factor ::= INTEGER_CONSTANT:constant {: System.out.println("Constant Int: " + constant ); :};
-factor ::= STRING_CONSTANT:constant {: System.out.println("Constant String: " + constant ); :};
 factor ::= FLOAT_CONSTANT:constant {: System.out.println("Constant Float: " + constant ); :};
-
-
+factor ::= OPEN_BRACKET expression CLOSE_BRACKET;

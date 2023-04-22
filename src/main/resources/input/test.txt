@@ -30,3 +30,8 @@ init {
     variable1 : Int
     p1, p2, p3 : String
 }
+
+read(base)
+
+*- Esto es un comentario -*
+*- Esto es otro comentario -*
