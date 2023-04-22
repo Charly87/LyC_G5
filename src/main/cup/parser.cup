@@ -1,8 +1,24 @@
 package lyc.compiler;
 
 import java_cup.runtime.*;
-
+import lyc.compiler.model.SymbolTableManager;
+import lyc.compiler.model.Symbol;
+import java.util.List;
+import java.util.ArrayList;
 class Parser;
+
+action code
+{:
+     public SymbolTableManager symbolTableManager = new SymbolTableManager();
+
+:}
+
+parser code
+{:
+    public List<Symbol> getSymbolList() {
+        return action_obj.symbolTableManager.getSymbolList();
+    }
+:}
 
 terminal CICLO;
 terminal WRITE;
@@ -44,18 +60,12 @@ terminal OP_EQU;
 // Non Terminals
 non terminal program;
 non terminal sentence;
-non terminal sentence_ciclo;
-non terminal sentence_write;
-non terminal sentence_read;
-non terminal sentence_if;
-non terminal sentence_ifelse;
 non terminal condition;
 non terminal assignment;
 non terminal expression;
 non terminal term;
 non terminal factor;
 
-non terminal block;
 non terminal blockDefinition;
 non terminal varDefinition;
 non terminal varDefinitionList;
@@ -67,30 +77,18 @@ non terminal comparator;
 // Start Symbol Definition
 start with program;
 
-//sentence ::= assignment {: System.out.println("End"); :};
-//assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); :};
-//expression ::= expression PLUS term {: System.out.println("+"); :};
-//expression ::= expression SUB term {: System.out.println("-"); :};
-//expression ::= term {: System.out.println("Expression = Term"); :};
-//term ::= term MULT factor {: System.out.println("*"); :};
-//term ::= term DIV factor {: System.out.println("/"); :};
-//term ::= factor {: System.out.println("Term = factor"); :};
-//factor ::= IDENTIFIER:id  {: System.out.println("Id: " + id); :};
-//factor ::= INTEGER_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
-//factor ::= OPEN_BRACKET expression CLOSE_BRACKET {: System.out.println("Factor = (Expression)"); :};
-
-
 program  ::= sentence {: System.out.println("End"); :};
 program  ::= program sentence {: System.out.println("Program Sentence"); :};
 
-sentence ::= block | assignment | sentence_ciclo | sentence_write | sentence_if | sentence_ifelse | sentence_read {: System.out.println("Sentence"); :};
-sentence_ciclo ::= CICLO OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("CICLO"); :};
-sentence_write ::= WRITE OPEN_BRACKET STRING_CONSTANT:constant CLOSE_BRACKET {: System.out.println("WRITE" + constant ); :};
-sentence_read ::= READ OPEN_BRACKET expression  CLOSE_BRACKET {: System.out.println("READ" ); :};
-sentence_if ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IF"); :};
-sentence_ifelse ::= sentence_if ELSE OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IFELSE"); :};
+sentence ::= assignment {: System.out.println("Sentence"); :};
+sentence ::= CICLO OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("CICLO"); :};
+sentence ::= WRITE OPEN_BRACKET STRING_CONSTANT:constant CLOSE_BRACKET {: System.out.println("WRITE" + constant ); :};
+sentence ::= READ OPEN_BRACKET IDENTIFIER  CLOSE_BRACKET {: System.out.println("READ" ); :};
+sentence ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IF"); :};
+sentence ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET ELSE OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IFELSE"); :};
 
-block ::= INIT OPEN_CURLY_BRACKET blockDefinition CLOSE_CURLY_BRACKET {: System.out.println("Block"); :};
+
+sentence ::= INIT OPEN_CURLY_BRACKET blockDefinition CLOSE_CURLY_BRACKET {: System.out.println("Block"); :};
 blockDefinition ::= blockDefinition varDefinition {: System.out.println("Block List"); :};
 blockDefinition ::= varDefinition {: System.out.println("Block Variable Definition"); :};
 varDefinition::= varDefinitionList COLON varType {: System.out.println("Variable Definition"); :};
@@ -101,12 +99,14 @@ varType ::= FLOAT | STRING | INT;
 condition ::= comparison;
 condition ::= condition OP_AND comparison;
 condition ::= condition OP_OR comparison;
+condition ::= OP_NOT comparison;
+
 
 comparison ::= expression comparator expression;
 comparator ::= OP_MAYOR | OP_MINOR | OP_MAYOREQU| OP_MINOREQU| OP_EQU;
 
 assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); :};
-assignment ::= IDENTIFIER ASSIG STRING_CONSTANT {: System.out.println("String Assignment"); :};
+//assignment ::= IDENTIFIER ASSIG STRING_CONSTANT {: System.out.println("String Assignment"); :};
 
 expression ::= expression PLUS term {: System.out.println("+"); :};
 expression ::= expression SUB term {: System.out.println("-"); :};
@@ -117,6 +117,10 @@ term ::= term DIV factor;
 term ::= factor;
 
 factor ::= IDENTIFIER:id {: System.out.println("Id: " + id); :};
-factor ::= INTEGER_CONSTANT:constant {: System.out.println("Constant Int: " + constant ); :};
-factor ::= FLOAT_CONSTANT:constant {: System.out.println("Constant Float: " + constant ); :};
+//factor ::= INTEGER_CONSTANT:constant {:System.out.println("Constant Int: " + constant ); :};
+//factor ::= FLOAT_CONSTANT:constant {: System.out.println("Constant Float: " + constant ); :};
+//factor ::= STRING_CONSTANT:constant {: System.out.println("Constant Float: " + constant ); :};
+factor ::= INTEGER_CONSTANT:constant {:symbolTableManager.addConstant(constant.toString()); System.out.println("Constant Int: " + constant ); :};
+factor ::= FLOAT_CONSTANT:constant {: symbolTableManager.addConstant(constant.toString()); System.out.println("Constant Float: " + constant ); :};
+factor ::= STRING_CONSTANT:constant {: symbolTableManager.addStringConstant(constant.toString()); System.out.println("Constant Float: " + constant ); :};
 factor ::= OPEN_BRACKET expression CLOSE_BRACKET;

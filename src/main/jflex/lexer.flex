@@ -47,7 +47,7 @@ OpenCurlyBracket = "{"
 CloseCurlyBracket = "}"
 Letter = [a-zA-Z]
 Digit = [0-9]
-Symbol = "." | ";" | "+" | "-" | "*" | "/" | "-" | "_" | "¿" | "?" | "&" | "," | " " | \t | "@" | "%"
+Symbol = "." | ";" | "+" | "-" | "*" | "/" | "-" | "_" | "¿" | "?" | "&" | "," | " " | \t | "@" | "%" | "(" | ")"
 
 WhiteSpace = {LineTerminator} | {Identation}
 Id = {Letter} ({Letter}|{Digit})*
