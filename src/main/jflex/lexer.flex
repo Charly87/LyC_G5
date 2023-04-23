@@ -47,14 +47,15 @@ OpenCurlyBracket = "{"
 CloseCurlyBracket = "}"
 Letter = [a-zA-Z]
 Digit = [0-9]
-Symbol = "." | ";" | "+" | "-" | "*" | "/" | "-" | "_" | "¿" | "?" | "&" | "," | " " | \t | "@" | "%" | "(" | ")"
+Symbol = "." | ";" | "+" | "-" | "*" | "/" | "-" | "_" | "¿" | "?" | "&" | "," | " " | \t | "@" | "%" | "(" | ")" | \" | "{" | "}"
 
 WhiteSpace = {LineTerminator} | {Identation}
 Id = {Letter} ({Letter}|{Digit})*
-Const_Int = {Digit}+
+Const_Int = "-"?{Digit}+
 Const_String = \"({Letter}|{Digit}|{Symbol})*\"
-Const_Float = ({Digit}+"."{Digit}*) | ({Digit}*"."{Digit}+)
-Comment =  "*-"({Letter}|{Digit}|{Symbol})*"-*"
+Const_Float = "-"? (({Digit}+"."{Digit}*) | ({Digit}*"."{Digit}+))
+ContenidoComentario =  {Letter}|{Digit}|{Symbol}
+Comment = ("*-" {ContenidoComentario}* "-*") | ("*-" {ContenidoComentario}* "*-" {ContenidoComentario}* "-*" {ContenidoComentario}* "-*")
 
 Ciclo = "ciclo"
 Write = "write"
@@ -77,6 +78,8 @@ MayorEqu = ">="
 MinorEqu = "<="
 Equ = "=="
 
+ElementInTheMiddle = "ElementInTheMiddle"
+
 %%
 
 
@@ -93,6 +96,8 @@ Equ = "=="
     {String}                                  { return symbol(ParserSym.STRING, yytext()); }
     {Init}                                    { return symbol(ParserSym.INIT, yytext()); }
     {Read}                                    { return symbol(ParserSym.READ, yytext()); }
+
+    {ElementInTheMiddle}                      { return symbol(ParserSym.ElementInTheMiddle, yytext()); }
 
     /* identifiers */
     {Id}                                      { return symbol(ParserSym.IDENTIFIER, yytext()); }

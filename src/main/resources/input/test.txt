@@ -36,3 +36,7 @@ read(base)
 *- Esto es un comentario -*
 *- Esto es otro comentario -*
 
+x = ElementInTheMiddle(a)
+x = ElementInTheMiddle(a,b,c)
+x = ElementInTheMiddle(a,b,c,d,e)
+

@@ -57,6 +57,8 @@ terminal OP_MAYOREQU;
 terminal OP_MINOREQU;
 terminal OP_EQU;
 
+terminal ElementInTheMiddle;
+
 
 // Non Terminals
 non terminal program;
@@ -74,6 +76,8 @@ non terminal varType;
 
 non terminal comparison;
 non terminal comparator;
+
+non terminal paramList;
 
 // Start Symbol Definition
 start with program;
@@ -93,7 +97,7 @@ sentence ::= INIT OPEN_CURLY_BRACKET blockDefinition CLOSE_CURLY_BRACKET {: Syst
 blockDefinition ::= blockDefinition varDefinition;
 blockDefinition ::= varDefinition;
 varDefinition::= varDefinitionList COLON varType {: System.out.println("Variable Definition"); :};
-varDefinitionList ::= varDefinitionList COMMA IDENTIFIER:id {: this.varList.add(id.toString()); System.out.println("Variable:" + id.toString()); :};
+varDefinitionList ::= varDefinitionList COMMA IDENTIFIER:id {: this.varList.add(id.toString()); System.out.println("Variable: " + id.toString()); :};
 varDefinitionList ::= IDENTIFIER:id {: this.varList.add(id.toString()); System.out.println("Variable: " + id.toString()); :};
 varType ::= FLOAT {: symbolTableManager.addIdentifiers(this.varList, DataType.FLOAT); System.out.println("Type: FLOAT"); :};
 varType ::= STRING {: symbolTableManager.addIdentifiers(this.varList, DataType.STRING); System.out.println("Type: STRING"); :};
@@ -112,6 +116,14 @@ assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); 
 expression ::= expression PLUS term {: System.out.println("+"); :};
 expression ::= expression SUB term {: System.out.println("-"); :};
 expression ::= term;
+//expression ::= ElementInTheMiddle OPEN_BRACKET paramList CLOSE_BRACKET {: System.out.println("ElementInTheMiddle"); :};
+//paramList  ::= factor:f1 COMMA paramList COMMA factor:f2 {: System.out.println("Param: " + f1.toString() + "\nParam: " + f2.toString()); :};
+//paramList  ::= factor:f {: System.out.println("Middle Param: " + f.toString()); :};
+
+expression ::= ElementInTheMiddle OPEN_BRACKET paramList CLOSE_BRACKET {: System.out.println("ElementInTheMiddle"); :};
+paramList  ::= paramList COMMA factor  COMMA factor ;
+paramList  ::= factor;
+
 
 term ::= term MULT factor;
 term ::= term DIV factor;
@@ -120,5 +132,5 @@ term ::= factor;
 factor ::= IDENTIFIER:id {: System.out.println("Id: " + id); :};
 factor ::= INTEGER_CONSTANT:constant {:symbolTableManager.addConstant(constant.toString()); System.out.println("Constant Int: " + constant ); :};
 factor ::= FLOAT_CONSTANT:constant {: symbolTableManager.addConstant(constant.toString()); System.out.println("Constant Float: " + constant ); :};
-factor ::= STRING_CONSTANT:constant {: symbolTableManager.addStringConstant(constant.toString()); System.out.println("Constant Float: " + constant ); :};
+factor ::= STRING_CONSTANT:constant {: symbolTableManager.addStringConstant(constant.toString()); System.out.println("Constant String: " + constant ); :};
 factor ::= OPEN_BRACKET expression CLOSE_BRACKET;
