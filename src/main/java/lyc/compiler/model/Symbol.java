@@ -1,11 +1,5 @@
 package lyc.compiler.model;
 
-enum DataType {
-    INTEGER,
-    STRING,
-    FLOAT
-}
-
 public class Symbol {
     private String name;
     private String value;

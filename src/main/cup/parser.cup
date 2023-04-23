@@ -3,6 +3,7 @@ package lyc.compiler;
 import java_cup.runtime.*;
 import lyc.compiler.model.SymbolTableManager;
 import lyc.compiler.model.Symbol;
+import lyc.compiler.model.DataType;
 import java.util.List;
 import java.util.ArrayList;
 class Parser;
@@ -10,7 +11,7 @@ class Parser;
 action code
 {:
      public SymbolTableManager symbolTableManager = new SymbolTableManager();
-
+     public ArrayList<String> varList = new ArrayList();
 :}
 
 parser code
@@ -88,25 +89,25 @@ sentence ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program 
 sentence ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET ELSE OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IFELSE"); :};
 
 
-sentence ::= INIT OPEN_CURLY_BRACKET blockDefinition CLOSE_CURLY_BRACKET {: System.out.println("Block"); :};
-blockDefinition ::= blockDefinition varDefinition {: System.out.println("Block List"); :};
-blockDefinition ::= varDefinition {: System.out.println("Block Variable Definition"); :};
+sentence ::= INIT OPEN_CURLY_BRACKET blockDefinition CLOSE_CURLY_BRACKET {: System.out.println("INIT Block"); :};
+blockDefinition ::= blockDefinition varDefinition;
+blockDefinition ::= varDefinition;
 varDefinition::= varDefinitionList COLON varType {: System.out.println("Variable Definition"); :};
-varDefinitionList ::= varDefinitionList COMMA IDENTIFIER {: System.out.println("Variable Definition List"); :};
-varDefinitionList ::= IDENTIFIER {: System.out.println("Variable Definition List"); :};
-varType ::= FLOAT | STRING | INT;
+varDefinitionList ::= varDefinitionList COMMA IDENTIFIER:id {: this.varList.add(id.toString()); System.out.println("Variable:" + id.toString()); :};
+varDefinitionList ::= IDENTIFIER:id {: this.varList.add(id.toString()); System.out.println("Variable: " + id.toString()); :};
+varType ::= FLOAT {: symbolTableManager.addIdentifiers(this.varList, DataType.FLOAT); System.out.println("Type: FLOAT"); :};
+varType ::= STRING {: symbolTableManager.addIdentifiers(this.varList, DataType.STRING); System.out.println("Type: STRING"); :};
+varType ::= INT {: symbolTableManager.addIdentifiers(this.varList, DataType.INTEGER); System.out.println("Type: INT"); :};
 
 condition ::= comparison;
 condition ::= condition OP_AND comparison;
 condition ::= condition OP_OR comparison;
 condition ::= OP_NOT comparison;
 
-
 comparison ::= expression comparator expression;
 comparator ::= OP_MAYOR | OP_MINOR | OP_MAYOREQU| OP_MINOREQU| OP_EQU;
 
 assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); :};
-//assignment ::= IDENTIFIER ASSIG STRING_CONSTANT {: System.out.println("String Assignment"); :};
 
 expression ::= expression PLUS term {: System.out.println("+"); :};
 expression ::= expression SUB term {: System.out.println("-"); :};
@@ -117,9 +118,6 @@ term ::= term DIV factor;
 term ::= factor;
 
 factor ::= IDENTIFIER:id {: System.out.println("Id: " + id); :};
-//factor ::= INTEGER_CONSTANT:constant {:System.out.println("Constant Int: " + constant ); :};
-//factor ::= FLOAT_CONSTANT:constant {: System.out.println("Constant Float: " + constant ); :};
-//factor ::= STRING_CONSTANT:constant {: System.out.println("Constant Float: " + constant ); :};
 factor ::= INTEGER_CONSTANT:constant {:symbolTableManager.addConstant(constant.toString()); System.out.println("Constant Int: " + constant ); :};
 factor ::= FLOAT_CONSTANT:constant {: symbolTableManager.addConstant(constant.toString()); System.out.println("Constant Float: " + constant ); :};
 factor ::= STRING_CONSTANT:constant {: symbolTableManager.addStringConstant(constant.toString()); System.out.println("Constant Float: " + constant ); :};
