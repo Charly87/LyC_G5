@@ -51,11 +51,11 @@ Symbol = "." | ";" | "+" | "-" | "*" | "/" | "-" | "_" | "¿" | "?" | "&" | "," 
 
 WhiteSpace = {LineTerminator} | {Identation}
 Id = {Letter} ({Letter}|{Digit})*
-Const_Int = "-"?{Digit}+
+Const_Int = {Digit}+|{Digit}
 Const_String = \"({Letter}|{Digit}|{Symbol})*\"
-Const_Float = "-"? (({Digit}+"."{Digit}*) | ({Digit}*"."{Digit}+))
+Const_Float = (({Digit}+"."{Digit}*) | ({Digit}*"."{Digit}+))
 ContenidoComentario =  {Letter}|{Digit}|{Symbol}
-Comment = ("*-" {ContenidoComentario}* "-*") | ("*-" {ContenidoComentario}* "*-" {ContenidoComentario}* "-*" {ContenidoComentario}* "-*")
+Comment = ("*-"|"/*") {ContenidoComentario}* ("-*"|"*/") | ("*-"|"/*") {ContenidoComentario}* ("*-"|"/*") {ContenidoComentario}* ("-*"|"*/") {ContenidoComentario}* ("-*"|"*/")
 
 Ciclo = "ciclo"
 Write = "write"
@@ -100,7 +100,12 @@ ElementInTheMiddle = "ElementInTheMiddle"
     {ElementInTheMiddle}                      { return symbol(ParserSym.ElementInTheMiddle, yytext()); }
 
     /* identifiers */
-    {Id}                                      { return symbol(ParserSym.IDENTIFIER, yytext()); }
+    {Id}                                      {
+                                                  final String value = new String(yytext());
+                                                  if (value.length() - 2 <= RANGO_STRING)
+                                                      return symbol(ParserSym.IDENTIFIER, value);
+                                                  else
+                                                      throw new InvalidLengthException( "El identificador [" + value + "] excede el largo permitido. (Se obtuvo una cadena de tamaño " + value.length() + ", maximo permitido: " + RANGO_STRING + ")"); }
     /* Constants */
     {Const_Int}                               {
                                                 try
