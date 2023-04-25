@@ -6,3 +6,8 @@ else
 {
     write("a es mas chico o igual a b")
 }
+
+if (a)
+{
+    write("if sin else")
+}
