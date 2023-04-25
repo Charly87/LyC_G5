@@ -1,0 +1,6 @@
+x = ElementInTheMiddle(a)
+x = ElementInTheMiddle(a,b,c)
+x = ElementInTheMiddle(a,b,c,d,e)
+x = ElementInTheMiddle(5)
+x = ElementInTheMiddle(4,5,6)
+x = ElementInTheMiddle(1,2,-3,4,5)
