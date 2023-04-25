@@ -7,7 +7,7 @@ else
     write("a es mas chico o igual a b")
 }
 
-if (a)
+if (a > b)
 {
     write("if sin else")
 }
