@@ -10,16 +10,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static com.google.common.truth.Truth.assertThat;
 import static lyc.compiler.Constants.EXAMPLES_ROOT_DIRECTORY;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Disabled
+
 public class ParserTest {
 
     @Test
     public void assignmentWithExpression() throws Exception {
+        Path currentRelativePath = Paths.get(""); String s = currentRelativePath.toAbsolutePath().toString(); System.out.println("Current absolute path is: " + s);
         compilationSuccessful("c=d*(e-21)/4");
     }
 

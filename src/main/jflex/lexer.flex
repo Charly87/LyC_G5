@@ -55,7 +55,7 @@ Const_Int = {Digit}+|{Digit}
 Const_String = \"({Letter}|{Digit}|{Symbol})*\"
 Const_Float = (({Digit}+"."{Digit}*) | ({Digit}*"."{Digit}+))
 ContenidoComentario =  {Letter}|{Digit}|{Symbol}
-Comment = ("*-"|"/*") {ContenidoComentario}* ("-*"|"*/") | ("*-"|"/*") {ContenidoComentario}* ("*-"|"/*") {ContenidoComentario}* ("-*"|"*/") {ContenidoComentario}* ("-*"|"*/")
+Comment = "*-" {ContenidoComentario}* "-*" | "*-" {ContenidoComentario}* "*-" {ContenidoComentario}* "-*" {ContenidoComentario}* "-*"
 
 Ciclo = "ciclo"
 Write = "write"
