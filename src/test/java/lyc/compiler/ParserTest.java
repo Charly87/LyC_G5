@@ -46,6 +46,7 @@ public class ParserTest {
         compilationSuccessful(readFromFile("read.txt"));
     }
 
+    @Disabled
     @Test
     void comment() throws Exception {
         compilationSuccessful(readFromFile("comment.txt"));

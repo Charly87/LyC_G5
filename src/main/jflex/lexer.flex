@@ -22,7 +22,6 @@ import static lyc.compiler.constants.Constants.*;
  int RANGO_ENTERO = (int) (Math.pow(2, 16)-1);
  float RANGO_FLOAT = (float) (Math.pow(2, 32)-1);
  int RANGO_STRING = 40;
- int RANGO_IDENTIFICADOR = 256;
 
   private Symbol symbol(int type) {
     return new Symbol(type, yyline, yycolumn);
@@ -49,14 +48,6 @@ Letter = [a-zA-Z]
 Digit = [0-9]
 Symbol = "." | ";" | "+" | "-" | "*" | "/" | "-" | "_" | "¿" | "?" | "&" | "," | " " | \t | "@" | "%" | "(" | ")" | \" | "{" | "}"
 
-WhiteSpace = {LineTerminator} | {Identation}
-Id = {Letter} ({Letter}|{Digit})*
-Const_Int = {Digit}+|{Digit}
-Const_String = \"({Letter}|{Digit}|{Symbol})*\"
-Const_Float = (({Digit}+"."{Digit}*) | ({Digit}*"."{Digit}+))
-ContenidoComentario =  {Letter}|{Digit}|{Symbol}
-Comment = "*-" {ContenidoComentario}* "-*" | "*-" {ContenidoComentario}* "*-" {ContenidoComentario}* "-*" {ContenidoComentario}* "-*"
-
 Ciclo = "ciclo"
 Write = "write"
 Read = "read"
@@ -80,6 +71,14 @@ Equ = "=="
 
 ElementInTheMiddle = "ElementInTheMiddle"
 
+WhiteSpace = {LineTerminator} | {Identation}
+Id = {Letter} ({Letter}|{Digit})*
+Const_Int = {Sub}? {Digit}+
+Const_String = \"({Letter}|{Digit}|{Symbol})*\"
+Const_Float = (({Digit}+"."{Digit}*) | ({Digit}*"."{Digit}+))
+ContenidoComentario =  {Letter}|{Digit}|{Symbol}
+Comment = "*-" {ContenidoComentario}* "-*" | "*-" {ContenidoComentario}* "*-" {ContenidoComentario}* "-*" {ContenidoComentario}* "-*"
+
 %%
 
 
@@ -96,6 +95,29 @@ ElementInTheMiddle = "ElementInTheMiddle"
     {String}                                  { return symbol(ParserSym.STRING, yytext()); }
     {Init}                                    { return symbol(ParserSym.INIT, yytext()); }
     {Read}                                    { return symbol(ParserSym.READ, yytext()); }
+
+    /* operators */
+    {Plus}                                    { return symbol(ParserSym.PLUS); }
+    {Sub}                                     { return symbol(ParserSym.SUB); }
+    {Mult}                                    { return symbol(ParserSym.MULT); }
+    {Div}                                     { return symbol(ParserSym.DIV); }
+    {Assig}                                   { return symbol(ParserSym.ASSIG); }
+    {OpenBracket}                             { return symbol(ParserSym.OPEN_BRACKET); }
+    {CloseBracket}                            { return symbol(ParserSym.CLOSE_BRACKET); }
+    {OpenCurlyBracket}                        { return symbol(ParserSym.OPEN_CURLY_BRACKET); }
+    {CloseCurlyBracket}                       { return symbol(ParserSym.CLOSE_CURLY_BRACKET); }
+    {Comma}                                   { return symbol(ParserSym.COMMA, yytext()); }
+    {Colon}                                   { return symbol(ParserSym.COLON, yytext()); }
+
+    {AND}                                     { return symbol(ParserSym.OP_AND); }
+    {OR}                                      { return symbol(ParserSym.OP_OR); }
+    {NOT}                                     { return symbol(ParserSym.OP_NOT); }
+    {Mayor}                                   { return symbol(ParserSym.OP_MAYOR); }
+    {Minor}                                   { return symbol(ParserSym.OP_MINOR); }
+    {MayorEqu}                                { return symbol(ParserSym.OP_MAYOREQU); }
+    {MinorEqu}                                { return symbol(ParserSym.OP_MINOREQU); }
+    {Equ}                                     { return symbol(ParserSym.OP_EQU); }
+
 
     {ElementInTheMiddle}                      { return symbol(ParserSym.ElementInTheMiddle, yytext()); }
 
@@ -136,29 +158,6 @@ ElementInTheMiddle = "ElementInTheMiddle"
                                                 else
                                                     throw new NumberFormatException("La constante [" + value + "] excede el tamaño permitido para un Float. Max permitido: " + RANGO_FLOAT + " Min permitido: -" + RANGO_FLOAT + ")");
                                             }
-
-    /* operators */
-    {Plus}                                    { return symbol(ParserSym.PLUS); }
-    {Sub}                                     { return symbol(ParserSym.SUB); }
-    {Mult}                                    { return symbol(ParserSym.MULT); }
-    {Div}                                     { return symbol(ParserSym.DIV); }
-    {Assig}                                   { return symbol(ParserSym.ASSIG); }
-    {OpenBracket}                             { return symbol(ParserSym.OPEN_BRACKET); }
-    {CloseBracket}                            { return symbol(ParserSym.CLOSE_BRACKET); }
-    {OpenCurlyBracket}                        { return symbol(ParserSym.OPEN_CURLY_BRACKET); }
-    {CloseCurlyBracket}                       { return symbol(ParserSym.CLOSE_CURLY_BRACKET); }
-    {Comma}                                   { return symbol(ParserSym.COMMA, yytext()); }
-    {Colon}                                   { return symbol(ParserSym.COLON, yytext()); }
-
-    {AND}                                     { return symbol(ParserSym.OP_AND); }
-    {OR}                                      { return symbol(ParserSym.OP_OR); }
-    {NOT}                                     { return symbol(ParserSym.OP_NOT); }
-    {Mayor}                                   { return symbol(ParserSym.OP_MAYOR); }
-    {Minor}                                   { return symbol(ParserSym.OP_MINOR); }
-    {MayorEqu}                                { return symbol(ParserSym.OP_MAYOREQU); }
-    {MinorEqu}                                { return symbol(ParserSym.OP_MINOREQU); }
-    {Equ}                                     { return symbol(ParserSym.OP_EQU); }
-
 
     /* whitespace */
     {WhiteSpace}                              { /* ignore */ }

@@ -88,6 +88,7 @@ program  ::= program sentence {: System.out.println("Program Sentence"); :};
 sentence ::= assignment {: System.out.println("Sentence"); :};
 sentence ::= CICLO OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("CICLO"); :};
 sentence ::= WRITE OPEN_BRACKET STRING_CONSTANT:constant CLOSE_BRACKET {: System.out.println("WRITE" + constant ); :};
+sentence ::= WRITE OPEN_BRACKET IDENTIFIER:constant CLOSE_BRACKET {: System.out.println("WRITE " + constant ); :};
 sentence ::= READ OPEN_BRACKET IDENTIFIER  CLOSE_BRACKET {: System.out.println("READ" ); :};
 sentence ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IF"); :};
 sentence ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET ELSE OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IFELSE"); :};
