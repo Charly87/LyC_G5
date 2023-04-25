@@ -4,3 +4,6 @@ a = .9999
 
 b = "@sdADaSjfla%dfg"
 b = "asldk  fh sjf"
+
+c = 1 + 2
+d = 2 * 2
