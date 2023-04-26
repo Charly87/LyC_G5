@@ -73,7 +73,7 @@ ElementInTheMiddle = "ElementInTheMiddle"
 
 WhiteSpace = {LineTerminator} | {Identation}
 Id = {Letter} ({Letter}|{Digit})*
-Const_Int = {Sub}? {Digit}+
+Const_Int = {Digit}+
 Const_String = \"({Letter}|{Digit}|{Symbol})*\"
 Const_Float = (({Digit}+"."{Digit}*) | ({Digit}*"."{Digit}+))
 ContenidoComentario =  {Letter}|{Digit}|{Symbol}
@@ -156,7 +156,7 @@ Comment = "*-" {ContenidoComentario}* "-*" | "*-" {ContenidoComentario}* "*-" {C
                                                 if(Math.abs(value) <= RANGO_FLOAT)
                                                     return symbol(ParserSym.FLOAT_CONSTANT, yytext());
                                                 else
-                                                    throw new NumberFormatException("La constante [" + value + "] excede el tamaño permitido para un Float. Max permitido: " + RANGO_FLOAT + " Min permitido: -" + RANGO_FLOAT + ")");
+                                                    throw new InvalidFloatException("La constante [" + value + "] excede el tamaño permitido para un Float. Max permitido: " + RANGO_FLOAT + " Min permitido: -" + RANGO_FLOAT + ")");
                                             }
 
     /* whitespace */

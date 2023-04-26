@@ -22,7 +22,6 @@ public class ParserTest {
 
     @Test
     public void assignmentWithExpression() throws Exception {
-        Path currentRelativePath = Paths.get(""); String s = currentRelativePath.toAbsolutePath().toString(); System.out.println("Current absolute path is: " + s);
         compilationSuccessful("c=d*(e-21)/4");
     }
 

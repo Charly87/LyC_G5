@@ -1,10 +1,7 @@
 package lyc.compiler;
 
 import lyc.compiler.factories.LexerFactory;
-import lyc.compiler.model.CompilerException;
-import lyc.compiler.model.InvalidIntegerException;
-import lyc.compiler.model.InvalidLengthException;
-import lyc.compiler.model.UnknownCharacterException;
+import lyc.compiler.model.*;
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
 import org.junit.jupiter.api.AfterEach;
@@ -26,6 +23,12 @@ public class LexerTest {
   @Test
   public void comment() throws Exception{
     scan("*-This is a comment-*");
+    assertThat(nextToken()).isEqualTo(ParserSym.EOF);
+  }
+
+  @Test
+  public void nestedComment() throws Exception{
+    scan("*-This is a *-different-* comment-*");
     assertThat(nextToken()).isEqualTo(ParserSym.EOF);
   }
 
@@ -54,13 +57,12 @@ public class LexerTest {
   }
 
   @Test
-  public void invalidNegativeIntegerConstantValue() {
-    assertThrows(InvalidIntegerException.class, () -> {
-      scan("%d".formatted(-9223372036854775807L));
+  public void invalidPositiveFloatConstantValue() {
+    assertThrows(InvalidFloatException.class, () -> {
+      scan("9223372036857.10");
       nextToken();
     });
   }
-
 
   @Test
   public void assignmentWithExpressions() throws Exception {
