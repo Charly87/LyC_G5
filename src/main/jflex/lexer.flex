@@ -73,10 +73,10 @@ ElementInTheMiddle = "ElementInTheMiddle"
 
 WhiteSpace = {LineTerminator} | {Identation}
 Id = {Letter} ({Letter}|{Digit})*
-Const_Int = {Digit}+
-Const_String = \"({Letter}|{Digit}|{Symbol})*\"
-Const_Float = (({Digit}+"."{Digit}*) | ({Digit}*"."{Digit}+))
-ContenidoComentario =  {Letter}|{Digit}|{Symbol}
+CTE_Int = {Digit}+
+CTE_String = \"({Letter}|{Digit}|{Symbol})*\"
+CTE_Float = (({Digit}+"."{Digit}*) | ({Digit}*"."{Digit}+))
+ContenidoComentario =  {Letter}|{Digit}
 Comment = "*-" {ContenidoComentario}* "-*" | "*-" {ContenidoComentario}* "*-" {ContenidoComentario}* "-*" {ContenidoComentario}* "-*"
 
 %%
@@ -129,12 +129,12 @@ Comment = "*-" {ContenidoComentario}* "-*" | "*-" {ContenidoComentario}* "*-" {C
                                                   else
                                                       throw new InvalidLengthException( "El identificador [" + value + "] excede el largo permitido. (Se obtuvo una cadena de tamaño " + value.length() + ", maximo permitido: " + RANGO_STRING + ")"); }
     /* Constants */
-    {Const_Int}                               {
+    {CTE_Int}                               {
                                                 try
                                                 {
                                                     Integer value = Integer.parseInt(yytext());
                                                     if(Math.abs(value) <= RANGO_ENTERO)
-                                                        return symbol(ParserSym.INTEGER_CONSTANT, value);
+                                                        return symbol(ParserSym.CTE_INT, value);
                                                     else
                                                         throw new InvalidIntegerException( "La constante [" + value + "] excede el tamaño permitido para un Int. Max permitido: " + RANGO_ENTERO + " Min permitido: -" + RANGO_ENTERO + ")");
                                                 }
@@ -144,17 +144,17 @@ Comment = "*-" {ContenidoComentario}* "-*" | "*-" {ContenidoComentario}* "*-" {C
                                                 }
                                             }
 
-    {Const_String}                            {
+    {CTE_String}                            {
                                                 final String value = new String(yytext());
                                                 if (value.length() - 2 <= RANGO_STRING)
-                                                    return symbol(ParserSym.STRING_CONSTANT, value);
+                                                    return symbol(ParserSym.CTE_STR, value);
                                                 else
                                                     throw new InvalidLengthException( "La constante [" + value + "] excede el largo permitido para un string. (Se obtuvo una cadena de tamaño " + value.length() + ", maximo permitido: " + RANGO_STRING + ")");
                                             }
-    {Const_Float}                             {
+    {CTE_Float}                             {
                                                 Float value = Float.parseFloat(yytext());
                                                 if(Math.abs(value) <= RANGO_FLOAT)
-                                                    return symbol(ParserSym.FLOAT_CONSTANT, yytext());
+                                                    return symbol(ParserSym.CTE_FLOAT, yytext());
                                                 else
                                                     throw new InvalidFloatException("La constante [" + value + "] excede el tamaño permitido para un Float. Max permitido: " + RANGO_FLOAT + " Min permitido: -" + RANGO_FLOAT + ")");
                                             }

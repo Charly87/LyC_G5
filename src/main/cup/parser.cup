@@ -37,9 +37,9 @@ terminal OPEN_BRACKET;
 terminal CLOSE_BRACKET;
 terminal OPEN_CURLY_BRACKET;
 terminal CLOSE_CURLY_BRACKET;
-terminal INTEGER_CONSTANT;
-terminal STRING_CONSTANT;
-terminal FLOAT_CONSTANT;
+terminal CTE_INT;
+terminal CTE_STR;
+terminal CTE_FLOAT;
 terminal IDENTIFIER;
 terminal INT;
 terminal FLOAT;
@@ -87,7 +87,7 @@ program  ::= program sentence {: System.out.println("Program Sentence"); :};
 
 sentence ::= assignment {: System.out.println("Sentence"); :};
 sentence ::= CICLO OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("CICLO"); :};
-sentence ::= WRITE OPEN_BRACKET STRING_CONSTANT:constant CLOSE_BRACKET {: System.out.println("WRITE" + constant ); :};
+sentence ::= WRITE OPEN_BRACKET CTE_STR:constant CLOSE_BRACKET {: System.out.println("WRITE" + constant ); :};
 sentence ::= WRITE OPEN_BRACKET IDENTIFIER:constant CLOSE_BRACKET {: System.out.println("WRITE " + constant ); :};
 sentence ::= READ OPEN_BRACKET IDENTIFIER  CLOSE_BRACKET {: System.out.println("READ" ); :};
 sentence ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IF"); :};
@@ -105,9 +105,9 @@ varType ::= STRING {: symbolTableManager.addIdentifiers(this.varList, DataType.S
 varType ::= INT {: symbolTableManager.addIdentifiers(this.varList, DataType.INTEGER); System.out.println("Type: INT"); :};
 
 condition ::= comparison;
-condition ::= condition OP_AND comparison;
-condition ::= condition OP_OR comparison;
-condition ::= OP_NOT comparison;
+condition ::= condition OP_AND comparison {: System.out.println("AND"); :};
+condition ::= condition OP_OR comparison {: System.out.println("OR"); :};
+condition ::= OP_NOT comparison {: System.out.println("NOT"); :};
 
 comparison ::= expression comparator expression;
 comparator ::= OP_MAYOR | OP_MINOR | OP_MAYOREQU| OP_MINOREQU| OP_EQU;
@@ -131,7 +131,7 @@ term ::= term DIV factor;
 term ::= factor;
 
 factor ::= IDENTIFIER:id {: System.out.println("Id: " + id); :};
-factor ::= INTEGER_CONSTANT:constant {:symbolTableManager.addConstant(constant.toString()); System.out.println("Constant Int: " + constant ); :};
-factor ::= FLOAT_CONSTANT:constant {: symbolTableManager.addConstant(constant.toString()); System.out.println("Constant Float: " + constant ); :};
-factor ::= STRING_CONSTANT:constant {: symbolTableManager.addStringConstant(constant.toString()); System.out.println("Constant String: " + constant ); :};
+factor ::= CTE_INT:constant {:symbolTableManager.addConstant(constant.toString()); System.out.println("Constant Int: " + constant ); :};
+factor ::= CTE_FLOAT:constant {: symbolTableManager.addConstant(constant.toString()); System.out.println("Constant Float: " + constant ); :};
+factor ::= CTE_STR:constant {: symbolTableManager.addStringConstant(constant.toString()); System.out.println("Constant String: " + constant ); :};
 factor ::= OPEN_BRACKET expression CLOSE_BRACKET;

@@ -7,7 +7,7 @@ ciclo (a > b)
     a = a + 1
 }
 
-if (a > b)
+if (a > b & a > b || b < j)
 {
     write("a es mas grande que b")
 }
