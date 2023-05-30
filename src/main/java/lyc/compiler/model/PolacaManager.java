@@ -23,7 +23,7 @@ public class PolacaManager {
                 stack.add(list.size());
                 break;
             case "ET":
-                list.add("ET");
+                list.add(item);
                 stack.add(list.size());
                 break;
             case "BI":
@@ -32,9 +32,12 @@ public class PolacaManager {
                 list.add("#");
                 stack.add(list.size());
                 break;
-            case "BIXX":
-                list.set(stack.pop()-1,"#"+(list.size() + 3));
-                list.add(item);
+            case "BICICLO":
+                int lastPos = stack.pop() - 1;
+                int nextPos = (list.size() + 3);
+                list.set(lastPos,"#"+ nextPos);
+                unstackCondition(lastPos + 1, nextPos);
+                list.add("BI");
                 list.add("#"+ stack.pop());
                 break;
             case "AND":
@@ -119,16 +122,21 @@ public class PolacaManager {
 
      public void unstack()
     {
-        int pos;
-        list.set(pos = stack.pop() - 1,"#" + (list.size()+1));
+        int lastPos;
+        list.set(lastPos = stack.pop() - 1,"#" + (list.size()+1));
+        unstackCondition(lastPos + 1, (list.size() + 1));
+    }
+
+    public void unstackCondition(int lastPos, int nextPos)
+    {
         if(conditionStack.size() > 0 ){
             String operator = conditionStack.pop();
             if(operator == "AND"){
-                list.set(stack.pop() - 1, "#" + (list.size() + 1));
+                list.set(stack.pop() - 1, "#" + nextPos);
             }
 
             if(operator == "OR" ){
-                list.set(stack.pop() - 1, "#" + (pos + 1));
+                list.set(stack.pop() - 1, "#" + lastPos);
             }
         }
     }

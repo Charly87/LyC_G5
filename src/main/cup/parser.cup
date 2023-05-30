@@ -68,6 +68,7 @@ terminal ElementInTheMiddle;
 
 
 // Non Terminals
+non terminal startProgram;
 non terminal program;
 non terminal sentence;
 non terminal condition;
@@ -87,10 +88,11 @@ non terminal comparator;
 non terminal paramList;
 
 // Start Symbol Definition
-start with program;
+start with startProgram;
 
+startProgram ::= program {: polacaManager.show(); :};
 program  ::= sentence {: System.out.println("End"); :};
-program  ::= program sentence {: polacaManager.show(); :};
+program  ::= program sentence;
 
 sentence ::= INIT OPEN_CURLY_BRACKET blockDefinition CLOSE_CURLY_BRACKET {: System.out.println("INIT Block"); :};
 blockDefinition ::= blockDefinition varDefinition;
@@ -102,7 +104,7 @@ varType ::= FLOAT {: symbolTableManager.addIdentifiers(this.varList, DataType.FL
 varType ::= STRING {: symbolTableManager.addIdentifiers(this.varList, DataType.STRING); System.out.println("Type: STRING"); :};
 varType ::= INT {: symbolTableManager.addIdentifiers(this.varList, DataType.INTEGER); System.out.println("Type: INT"); :};
 
-sentence ::= CICLO OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("CICLO"); :};
+sentence ::= CICLO OPEN_BRACKET {: polacaManager.insert("ET"); :} condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: polacaManager.insert("BICICLO"); :};
 sentence ::= WRITE OPEN_BRACKET CTE_STR:constant CLOSE_BRACKET {: System.out.println("WRITE" + constant ); :};
 sentence ::= WRITE OPEN_BRACKET IDENTIFIER:constant CLOSE_BRACKET {: System.out.println("WRITE " + constant ); :};
 sentence ::= READ OPEN_BRACKET IDENTIFIER  CLOSE_BRACKET {: System.out.println("READ" ); :};
