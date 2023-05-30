@@ -2,6 +2,7 @@ package lyc.compiler;
 
 import java_cup.runtime.*;
 import lyc.compiler.model.SymbolTableManager;
+import lyc.compiler.model.PolacaManager;
 import lyc.compiler.model.Symbol;
 import lyc.compiler.model.DataType;
 import java.util.List;
@@ -11,6 +12,7 @@ class Parser;
 action code
 {:
      public SymbolTableManager symbolTableManager = new SymbolTableManager();
+     public PolacaManager polacaManager = new PolacaManager();
      public ArrayList<String> varList = new ArrayList();
 :}
 
@@ -18,6 +20,10 @@ parser code
 {:
     public List<Symbol> getSymbolList() {
         return action_obj.symbolTableManager.getSymbolList();
+    }
+
+    public ArrayList<String> getPolacaList() {
+            return action_obj.polacaManager.getList();
     }
 :}
 
@@ -56,6 +62,7 @@ terminal OP_MINOR;
 terminal OP_MAYOREQU;
 terminal OP_MINOREQU;
 terminal OP_EQU;
+terminal OP_DISTINCT;
 
 terminal ElementInTheMiddle;
 
@@ -83,16 +90,7 @@ non terminal paramList;
 start with program;
 
 program  ::= sentence {: System.out.println("End"); :};
-program  ::= program sentence {: System.out.println("Program Sentence"); :};
-
-sentence ::= assignment {: System.out.println("Sentence"); :};
-sentence ::= CICLO OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("CICLO"); :};
-sentence ::= WRITE OPEN_BRACKET CTE_STR:constant CLOSE_BRACKET {: System.out.println("WRITE" + constant ); :};
-sentence ::= WRITE OPEN_BRACKET IDENTIFIER:constant CLOSE_BRACKET {: System.out.println("WRITE " + constant ); :};
-sentence ::= READ OPEN_BRACKET IDENTIFIER  CLOSE_BRACKET {: System.out.println("READ" ); :};
-sentence ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IF"); :};
-sentence ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET ELSE OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("IFELSE"); :};
-
+program  ::= program sentence {: polacaManager.show(); :};
 
 sentence ::= INIT OPEN_CURLY_BRACKET blockDefinition CLOSE_CURLY_BRACKET {: System.out.println("INIT Block"); :};
 blockDefinition ::= blockDefinition varDefinition;
@@ -104,34 +102,44 @@ varType ::= FLOAT {: symbolTableManager.addIdentifiers(this.varList, DataType.FL
 varType ::= STRING {: symbolTableManager.addIdentifiers(this.varList, DataType.STRING); System.out.println("Type: STRING"); :};
 varType ::= INT {: symbolTableManager.addIdentifiers(this.varList, DataType.INTEGER); System.out.println("Type: INT"); :};
 
+sentence ::= CICLO OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: System.out.println("CICLO"); :};
+sentence ::= WRITE OPEN_BRACKET CTE_STR:constant CLOSE_BRACKET {: System.out.println("WRITE" + constant ); :};
+sentence ::= WRITE OPEN_BRACKET IDENTIFIER:constant CLOSE_BRACKET {: System.out.println("WRITE " + constant ); :};
+sentence ::= READ OPEN_BRACKET IDENTIFIER  CLOSE_BRACKET {: System.out.println("READ" ); :};
+sentence ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: polacaManager.insert("BI"); :} ELSE OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: polacaManager.unstack(); :};
+sentence ::= IF OPEN_BRACKET condition  CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: polacaManager.unstack(); :};
+sentence ::= assignment;
+
+condition ::= condition OP_AND comparison {: polacaManager.insert("AND"); :};
+condition ::= condition {: polacaManager.insert("NOT");:} OP_OR comparison {: polacaManager.insert("OR");:};
+condition ::= OP_NOT comparison {: polacaManager.insert("NOT"); :};
 condition ::= comparison;
-condition ::= condition OP_AND comparison {: System.out.println("AND"); :};
-condition ::= condition OP_OR comparison {: System.out.println("OR"); :};
-condition ::= OP_NOT comparison {: System.out.println("NOT"); :};
 
-comparison ::= expression comparator expression;
-comparator ::= OP_MAYOR | OP_MINOR | OP_MAYOREQU| OP_MINOREQU| OP_EQU;
+comparison ::= expression OP_MAYOR expression {: polacaManager.insert("BLE"); :};
+comparison ::= expression OP_MINOR expression {: polacaManager.insert("BGE"); :};
+comparison ::= expression OP_MAYOREQU expression {: polacaManager.insert("BLT"); :};
+comparison ::= expression OP_MINOREQU expression {: polacaManager.insert("BGT"); :};
+comparison ::= expression OP_EQU expression {: polacaManager.insert("BNE"); :};
+comparison ::= expression OP_DISTINCT expression {: polacaManager.insert("BEQ"); :};
 
-assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); :};
 
-expression ::= expression PLUS term {: System.out.println("+"); :};
-expression ::= expression SUB term {: System.out.println("-"); :};
+assignment ::= IDENTIFIER:id ASSIG expression {: polacaManager.insert(id.toString()); polacaManager.insert(":=");:};
+
+expression ::= expression PLUS term {: polacaManager.insert("+"); :};
+expression ::= expression SUB term {: polacaManager.insert("-"); :};
 expression ::= term;
-//expression ::= ElementInTheMiddle OPEN_BRACKET paramList CLOSE_BRACKET {: System.out.println("ElementInTheMiddle"); :};
-//paramList  ::= factor:f1 COMMA paramList COMMA factor:f2 {: System.out.println("Param: " + f1.toString() + "\nParam: " + f2.toString()); :};
-//paramList  ::= factor:f {: System.out.println("Middle Param: " + f.toString()); :};
 
 expression ::= ElementInTheMiddle OPEN_BRACKET paramList CLOSE_BRACKET {: System.out.println("ElementInTheMiddle"); :};
 paramList  ::= paramList COMMA factor  COMMA factor ;
 paramList  ::= factor;
 
 
-term ::= term MULT factor;
-term ::= term DIV factor;
+term ::= term MULT factor {: polacaManager.insert("*"); :};
+term ::= term DIV factor {: polacaManager.insert("/"); :};
 term ::= factor;
 
-factor ::= IDENTIFIER:id {: System.out.println("Id: " + id); :};
-factor ::= CTE_INT:constant {:symbolTableManager.addConstant(constant.toString()); System.out.println("Constant Int: " + constant ); :};
-factor ::= CTE_FLOAT:constant {: symbolTableManager.addConstant(constant.toString()); System.out.println("Constant Float: " + constant ); :};
-factor ::= CTE_STR:constant {: symbolTableManager.addStringConstant(constant.toString()); System.out.println("Constant String: " + constant ); :};
+factor ::= IDENTIFIER:id {: polacaManager.insert(id.toString()); :};
+factor ::= CTE_INT:constant {: symbolTableManager.addConstant(constant.toString()); polacaManager.insert(constant.toString());:};
+factor ::= CTE_FLOAT:constant {: symbolTableManager.addConstant(constant.toString()); polacaManager.insert(constant.toString());:};
+factor ::= CTE_STR:constant {: symbolTableManager.addStringConstant(constant.toString()); polacaManager.insert(constant.toString());:};
 factor ::= OPEN_BRACKET expression CLOSE_BRACKET;

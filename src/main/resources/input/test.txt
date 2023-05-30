@@ -1,4 +1,41 @@
 a = 1
+
+init {
+    a1 : Float
+    variable1 : Int
+    p1, p2, p3 : String
+}
+
+if (a > b )
+{
+    aa = bb + 1
+}
+
+if (b > c & d < e )
+{
+    cc = dd + 1
+}
+
+if (f > g || h < i)
+{
+    ee = ff + 1
+}
+
+if (not a > b )
+{
+    gg = hh + 1
+}
+
+if (a > b)
+{
+    a = b + 4
+}
+else
+{
+    c = d + 4
+}
+
+a = 1
 b = 3
 
 ciclo (a > b)
@@ -7,7 +44,8 @@ ciclo (a > b)
     a = a + 1
 }
 
-if (a > b & a > b || b < j)
+
+if (a > b & a > b)
 {
     write("a es mas grande que b")
 }
@@ -25,11 +63,6 @@ b = "asldk  fh sjf"
 
 b = 80
 
-init {
-    a1 : Float
-    variable1 : Int
-    p1, p2, p3 : String
-}
 
 read(base)
 

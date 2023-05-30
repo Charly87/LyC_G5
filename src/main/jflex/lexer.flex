@@ -68,6 +68,7 @@ Minor = "<"
 MayorEqu = ">="
 MinorEqu = "<="
 Equ = "=="
+Distinct  = "!="
 
 ElementInTheMiddle = "ElementInTheMiddle"
 
@@ -76,7 +77,7 @@ Id = {Letter} ({Letter}|{Digit})*
 CTE_Int = {Digit}+
 CTE_String = \"({Letter}|{Digit}|{Symbol})*\"
 CTE_Float = (({Digit}+"."{Digit}*) | ({Digit}*"."{Digit}+))
-ContenidoComentario =  {Letter}|{Digit}
+ContenidoComentario =  {Letter}|{Digit}|{WhiteSpace}
 Comment = "*-" {ContenidoComentario}* "-*" | "*-" {ContenidoComentario}* "*-" {ContenidoComentario}* "-*" {ContenidoComentario}* "-*"
 
 %%
@@ -117,6 +118,7 @@ Comment = "*-" {ContenidoComentario}* "-*" | "*-" {ContenidoComentario}* "*-" {C
     {MayorEqu}                                { return symbol(ParserSym.OP_MAYOREQU); }
     {MinorEqu}                                { return symbol(ParserSym.OP_MINOREQU); }
     {Equ}                                     { return symbol(ParserSym.OP_EQU); }
+    {Distinct}                                { return symbol(ParserSym.OP_DISTINCT); }
 
 
     {ElementInTheMiddle}                      { return symbol(ParserSym.ElementInTheMiddle, yytext()); }
