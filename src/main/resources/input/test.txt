@@ -86,3 +86,5 @@ x = ElementInTheMiddle(a)
 x = ElementInTheMiddle(a,b,c)
 x = ElementInTheMiddle(a,b,c,d,e)
 
+x = c
+

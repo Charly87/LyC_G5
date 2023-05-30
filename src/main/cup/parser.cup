@@ -131,8 +131,8 @@ expression ::= expression PLUS term {: polacaManager.insert("+"); :};
 expression ::= expression SUB term {: polacaManager.insert("-"); :};
 expression ::= term;
 
-expression ::= ElementInTheMiddle OPEN_BRACKET paramList CLOSE_BRACKET {: System.out.println("ElementInTheMiddle"); :};
-paramList  ::= paramList COMMA factor  COMMA factor ;
+expression ::= ElementInTheMiddle OPEN_BRACKET paramList CLOSE_BRACKET {: polacaManager.insert("ElementInTheMiddle"); :};
+paramList  ::= paramList COMMA factor  COMMA factor {: polacaManager.insert("ElementInTheMiddleCount"); :};
 paramList  ::= factor;
 
 
@@ -140,7 +140,7 @@ term ::= term MULT factor {: polacaManager.insert("*"); :};
 term ::= term DIV factor {: polacaManager.insert("/"); :};
 term ::= factor;
 
-factor ::= IDENTIFIER:id {: polacaManager.insert(id.toString()); :};
+factor ::= IDENTIFIER:id {: polacaManager.insert(id.toString()); System.out.println(id.toString());:};
 factor ::= CTE_INT:constant {: symbolTableManager.addConstant(constant.toString()); polacaManager.insert(constant.toString());:};
 factor ::= CTE_FLOAT:constant {: symbolTableManager.addConstant(constant.toString()); polacaManager.insert(constant.toString());:};
 factor ::= CTE_STR:constant {: symbolTableManager.addStringConstant(constant.toString()); polacaManager.insert(constant.toString());:};

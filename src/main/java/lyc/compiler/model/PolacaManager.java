@@ -71,55 +71,27 @@ public class PolacaManager {
                         break;
                 }
                 break;
-            case "COMPONENT":
-                list.add("_aux"+ counter);
-                allequal.add("_aux"+ counter);
-                list.add(":=");
-                counter++;
+            case "ElementInTheMiddle":
+                if(counter > 1) {
+                    String middle = list.get(list.size() - counter / 2 - 1);
+
+                    int start = list.size() - counter;
+                    int end = list.size() - 1;
+                    for (int i = end; i >= start; i--)
+                        list.remove(i);
+                    list.add(middle);
+                    counter = 1;
+                }
+
                 break;
-            case "ALLEQUAL":
-//                System.out.println("tope de pila "+allequal.peek());
-//                System.out.println("tam "+allequal.size());
-                while (allequal.size()!=0){
-                    list.add(allequal.pop());
-                    String aux = allequal.pop();
-                    if (allequal.size()!=0){
-                        list.add(allequal.pop());
-                        allequal.add(aux);
-                    }else {
-                        list.add(aux);
-                    }
-                    list.add("CMP");
-                    list.add("BNE");
-                    list.add("#");
-                    stack.add(list.size());
-                    conditionStack.add("AND");
-                }
-                counter = counter / 2;
-                if (counter == 1){
-                    list.set(stack.pop()-1,"#"+(list.size()+4));
-                }else
-                {
-                    while (counter != 1){
-                        list.set(stack.pop()-1,"#"+(list.size()+4));
-                        if(conditionStack.pop()=="AND"){
-                            list.set(stack.pop()-1,"#"+(list.size()+4));
-                        }
-                        counter--;
-                    }
-                }
-                list.add("TRUE");
-                list.add("BI");
-                list.add("#"+(list.size()+3));
-                list.add("FALSE");
-                counter = 1;
+            case "ElementInTheMiddleCount":
+                counter += 2;
                 break;
             default:
                 list.add(item);
                 break;
         }
     }
-
      public void unstack()
     {
         int lastPos;
@@ -152,8 +124,6 @@ public class PolacaManager {
         stack.clear();
         conditionStack.clear();
     }
-
-
     public ArrayList<String> getList(){
         return this.list;
     }
