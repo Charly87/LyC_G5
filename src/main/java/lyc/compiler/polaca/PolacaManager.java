@@ -1,30 +1,55 @@
-package lyc.compiler.model;
+package lyc.compiler.polaca;
 
 import java.util.ArrayList;
 import java.util.Stack;
 
-public class PolacaManager extends ListOperation{
-    @Override
-    public void insert(ArrayList<String> list, Stack<Integer> stack, String item) {
-    }
-//            case "AND":
-//                conditionStack.add(item);
-//                break;
-//            case "OR":
-//                conditionStack.add(item);
-//                break;
-//            case "NOT":
-//
-//                break;
-//            case "ElementInTheMiddle":
-//                break;
-//            case "ElementInTheMiddleCount":
-//                counter += 2;
-//                break;
-//            default:
-//                list.add(item);
-//                break;
+public class PolacaManager {
 
+    protected static Stack<String> conditionStack = new Stack<String>();
+    protected static ArrayList<String> list = new ArrayList<String>();
+    protected static Stack<Integer> stack = new Stack<Integer>();
+    protected static int counter = 1;
+
+    public void insert(String item) {
+        ListOperation operation;
+        switch(item) {
+            case "BLE":
+            case "BNE":
+            case "BEQ":
+            case "BGT":
+            case "BLT":
+            case "BGE":
+                operation = new CMPOperator();
+                break;
+            case "ET":
+                operation = new ETOperator();
+                break;
+            case "BI":
+                operation = new BIOperator();
+                break;
+            case "BICICLO":
+                operation = new BICicloOperator();
+                break;
+            case "AND":
+            case "OR":
+                operation = new ConditionalOperator();
+                break;
+            case "NOT":
+                operation = new NOTOperator();
+                break;
+            case "ElementInTheMiddle":
+                operation = new ElementInTheMiddle();
+                break;
+            case "ElementInTheMiddleCount":
+                operation = new ElementInTheMiddleCount();
+                break;
+            default:
+                operation = new DefaultOperation();
+                break;
+        }
+
+        operation.operation(list, stack, item);
+    }
 
      public void unstack()
     {
@@ -51,7 +76,6 @@ public class PolacaManager extends ListOperation{
         int i = 1;
         for(String item : list){
             System.out.println(i + ") " + item);
-            //System.out.print(+ i + "|" +item + "  ");
             i++;
         }
         list.clear();

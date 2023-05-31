@@ -2,7 +2,7 @@ package lyc.compiler;
 
 import java_cup.runtime.*;
 import lyc.compiler.model.SymbolTableManager;
-import lyc.compiler.model.PolacaManager;
+import lyc.compiler.polaca.PolacaManager;
 import lyc.compiler.model.Symbol;
 import lyc.compiler.model.DataType;
 import java.util.List;
