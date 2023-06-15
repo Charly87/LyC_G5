@@ -1,14 +1,26 @@
 package lyc.compiler.polaca;
 
+import lyc.compiler.model.DataType;
+
 import java.util.ArrayList;
 import java.util.Stack;
 
 public class PolacaManager {
 
     protected static Stack<String> conditionStack = new Stack<String>();
-    protected static ArrayList<String> list = new ArrayList<String>();
-    protected static Stack<Integer> stack = new Stack<Integer>();
+    protected static ArrayList<String> list = new ArrayList<String>();//la polaca en si
+    protected static Stack<Integer> stack = new Stack<Integer>();// lugares donde se debe modificar para hacer los saltos
+
     protected static int counter = 1;
+
+    public boolean analizar(DataType t1,DataType t2){
+
+        if( t1.toString().contains(t2.toString()) || t2.toString().contains(t1.toString()) )
+            return true;
+        else {
+            throw new Error(t1+ " y " + t2+ " Error de typo");
+        }
+    }
 
     public void insert(String item) {
         ListOperation operation;
@@ -43,6 +55,7 @@ public class PolacaManager {
             case "ElementInTheMiddleCount":
                 operation = new ElementInTheMiddleCount();
                 break;
+
             default:
                 operation = new DefaultOperation();
                 break;
@@ -78,6 +91,7 @@ public class PolacaManager {
             System.out.println(i + ") " + item);
             i++;
         }
+        System.out.println("\n");
         list.clear();
         stack.clear();
         conditionStack.clear();

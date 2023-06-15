@@ -14,6 +14,7 @@ action code
      public SymbolTableManager symbolTableManager = new SymbolTableManager();
      public PolacaManager polacaManager = new PolacaManager();
      public ArrayList<String> varList = new ArrayList();
+     public DataType tFactor,tExpresion,tTermino,tExpresionAux;
 :}
 
 parser code
@@ -117,31 +118,33 @@ condition ::= condition {: polacaManager.insert("NOT");:} OP_OR comparison {: po
 condition ::= OP_NOT comparison {: polacaManager.insert("NOT"); :};
 condition ::= comparison;
 
-comparison ::= expression OP_MAYOR expression {: polacaManager.insert("BLE"); :};
-comparison ::= expression OP_MINOR expression {: polacaManager.insert("BGE"); :};
-comparison ::= expression OP_MAYOREQU expression {: polacaManager.insert("BLT"); :};
-comparison ::= expression OP_MINOREQU expression {: polacaManager.insert("BGT"); :};
-comparison ::= expression OP_EQU expression {: polacaManager.insert("BNE"); :};
-comparison ::= expression OP_DISTINCT expression {: polacaManager.insert("BEQ"); :};
+comparison ::= expression {: tExpresionAux= tExpresion; :} OP_MAYOR expression {: polacaManager.analizar(tExpresionAux,tExpresion); polacaManager.insert("BLE"); :};
+comparison ::= expression {: tExpresionAux= tExpresion; :} OP_MINOR expression {: polacaManager.analizar(tExpresionAux,tExpresion); polacaManager.insert("BGE"); :};
+comparison ::= expression {: tExpresionAux= tExpresion; :} OP_MAYOREQU expression {: polacaManager.analizar(tExpresionAux,tExpresion); polacaManager.insert("BLT"); :};
+comparison ::= expression {: tExpresionAux= tExpresion; :} OP_MINOREQU expression {: polacaManager.analizar(tExpresionAux,tTermino); polacaManager.insert("BGT"); :};
+comparison ::= expression {: tExpresionAux= tExpresion; :} OP_EQU expression {: polacaManager.analizar(tExpresionAux,tExpresion); polacaManager.insert("BNE"); :};
+comparison ::= expression {: tExpresionAux= tExpresion; :} OP_DISTINCT expression {: polacaManager.analizar(tExpresionAux,tExpresion); polacaManager.insert("BEQ"); :};
 
 
-assignment ::= IDENTIFIER:id ASSIG expression {: polacaManager.insert(id.toString()); polacaManager.insert(":=");:};
+assignment ::= IDENTIFIER:id ASSIG expression {:
+                polacaManager.analizar(symbolTableManager.getSymbol(id.toString()).getType(),tExpresion);
+                polacaManager.insert(id.toString());polacaManager.insert(":="); :};
 
-expression ::= expression PLUS term {: polacaManager.insert("+"); :};
-expression ::= expression SUB term {: polacaManager.insert("-"); :};
-expression ::= term;
+expression ::= expression PLUS term {: polacaManager.analizar(tExpresion,tTermino); polacaManager.insert("+"); :};
+expression ::= expression SUB term {: polacaManager.analizar(tExpresion,tTermino); polacaManager.insert("-"); :};
+expression ::= term {: tExpresion=tTermino; :};
 
 expression ::= ElementInTheMiddle OPEN_BRACKET paramList CLOSE_BRACKET {: polacaManager.insert("ElementInTheMiddle"); :};
 paramList  ::= paramList COMMA factor  COMMA factor {: polacaManager.insert("ElementInTheMiddleCount"); :};
 paramList  ::= factor;
 
 
-term ::= term MULT factor {: polacaManager.insert("*"); :};
-term ::= term DIV factor {: polacaManager.insert("/"); :};
-term ::= factor;
+term ::= term MULT factor {: polacaManager.analizar(tTermino,tFactor); polacaManager.insert("*"); :};
+term ::= term DIV factor {: polacaManager.analizar(tTermino,tFactor); polacaManager.insert("/"); :};
+term ::= factor {: tTermino=tFactor; :};
 
-factor ::= IDENTIFIER:id {: polacaManager.insert(id.toString()); System.out.println(id.toString());:};
-factor ::= CTE_INT:constant {: symbolTableManager.addConstant(constant.toString()); polacaManager.insert(constant.toString());:};
-factor ::= CTE_FLOAT:constant {: symbolTableManager.addConstant(constant.toString()); polacaManager.insert(constant.toString());:};
-factor ::= CTE_STR:constant {: symbolTableManager.addStringConstant(constant.toString()); polacaManager.insert(constant.toString());:};
+factor ::= IDENTIFIER:id {: tFactor=symbolTableManager.addFactor(id.toString()); polacaManager.insert(id.toString()); :};
+factor ::= CTE_INT:constant {: symbolTableManager.addFactor(constant.toString(),DataType.CTE_INTEGER); tFactor=DataType.CTE_INTEGER;polacaManager.insert(constant.toString()); :};
+factor ::= CTE_FLOAT:constant {: symbolTableManager.addFactor(constant.toString(),DataType.CTE_FLOAT); tFactor=DataType.CTE_FLOAT;polacaManager.insert(constant.toString());:};
+factor ::= CTE_STR:constant {: symbolTableManager.addFactor(constant.toString(),DataType.CTE_STRING); tFactor=DataType.CTE_STRING;polacaManager.insert(constant.toString());:};
 factor ::= OPEN_BRACKET expression CLOSE_BRACKET;

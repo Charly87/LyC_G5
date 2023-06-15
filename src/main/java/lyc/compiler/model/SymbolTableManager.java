@@ -1,6 +1,7 @@
 package lyc.compiler.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class SymbolTableManager {
@@ -21,13 +22,36 @@ public class SymbolTableManager {
         return symbolList;
     }
 
+    public Symbol getSymbol(String name) {
+
+        Iterator<Symbol> iterator = symbolList.iterator();
+
+        while (iterator.hasNext()) {
+            Symbol symbol = iterator.next();
+            if (symbol.getName().equals(name))
+                return symbol;
+        }
+        return null;
+    }
+    /*
     public void addConstant(String value) {
         this.add("_" + value, null, value, null);
     }
     public void addStringConstant(String value) {
         this.add("_string" + counter++, null, value, value.length());
     }
+    */
 
+    public void addFactor(String value,DataType tipo) {
+        if(!exist("_"+value))
+            this.add("_" + value, tipo, value, (tipo.equals(DataType.CTE_STRING)? value.length() : null));
+    }
+    public DataType addFactor(String name) {
+        if(exist(name))
+            return getSymbol(name).getType();
+        else
+            throw new Error(name+ " No ha sido declarada");
+    }
     public void addIdentifiers(ArrayList<String> identifiers, DataType dataType) {
         for(String id : identifiers) {
             if (!exist(id)) {
