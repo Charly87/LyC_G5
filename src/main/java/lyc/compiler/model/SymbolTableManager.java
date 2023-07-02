@@ -31,7 +31,9 @@ public class SymbolTableManager {
             if (symbol.getName().equals(name))
                 return symbol;
         }
-        return null;
+
+        /*Si el name no se encuentra en la lista, devuelve Error*/
+        throw new Error(name+ " no se encuentra en SymbolTable");
     }
     /*
     public void addConstant(String value) {
