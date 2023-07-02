@@ -42,6 +42,14 @@ public class ParserTest {
         System.out.println();
     }
 
+    @Test
+    public void assignmentNoDeclaradaVar() throws Exception {
+        String cadena="init { i1 : Int } i55=9+18";
+        System.out.println(cadena);
+        assertThrows(Error.class, () -> {  compilationSuccessful(cadena);
+        });
+        System.out.println();
+    }
 
     @Test
     public void assignmentSumaCteDistintoTipo2() throws Exception {
