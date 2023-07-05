@@ -92,9 +92,9 @@ public class PolacaManager {
             i++;
         }
         System.out.println("\n");
-        list.clear();
-        stack.clear();
-        conditionStack.clear();
+        //list.clear();
+        //stack.clear();
+        //conditionStack.clear();
     }
     public ArrayList<String> getList(){
         return this.list;

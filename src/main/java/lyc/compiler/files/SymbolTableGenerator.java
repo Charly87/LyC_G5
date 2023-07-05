@@ -14,10 +14,6 @@ public class SymbolTableGenerator implements FileGenerator{
         this.symbolList = symbolList;
     }
 
-    public SymbolTableGenerator() {
-        this.symbolList = Collections.emptyList();
-    }
-
     @Override
     public void generate(FileWriter fileWriter) throws IOException {
         try {

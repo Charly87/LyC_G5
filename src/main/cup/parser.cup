@@ -106,9 +106,9 @@ varType ::= STRING {: symbolTableManager.addIdentifiers(this.varList, DataType.S
 varType ::= INT {: symbolTableManager.addIdentifiers(this.varList, DataType.INTEGER); System.out.println("Type: INT"); :};
 
 sentence ::= CICLO OPEN_BRACKET {: polacaManager.insert("ET"); :} condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: polacaManager.insert("BICICLO"); :};
-sentence ::= WRITE OPEN_BRACKET CTE_STR:constant CLOSE_BRACKET {: System.out.println("WRITE" + constant ); :};
-sentence ::= WRITE OPEN_BRACKET IDENTIFIER:constant CLOSE_BRACKET {: System.out.println("WRITE " + constant ); :};
-sentence ::= READ OPEN_BRACKET IDENTIFIER  CLOSE_BRACKET {: System.out.println("READ" ); :};
+sentence ::= WRITE OPEN_BRACKET CTE_STR:constant CLOSE_BRACKET {: polacaManager.insert("WRITE"); /*polacaManager.insert(constant);*/ :};
+sentence ::= WRITE OPEN_BRACKET IDENTIFIER:identifier CLOSE_BRACKET {: polacaManager.insert("WRITE"); /*polacaManager.insert(identifier);*/ :};
+sentence ::= READ OPEN_BRACKET IDENTIFIER:identifier  CLOSE_BRACKET {: polacaManager.insert("READ"); /*polacaManager.insert(identifier);*/ :};
 sentence ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: polacaManager.insert("BI"); :} ELSE OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: polacaManager.unstack(); :};
 sentence ::= IF OPEN_BRACKET condition  CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: polacaManager.unstack(); :};
 sentence ::= assignment;
