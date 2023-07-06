@@ -1,0 +1,9 @@
+init {
+    a : Int
+    b : Int
+    c : Int
+}
+
+b = 4
+c = 8
+a = b + c

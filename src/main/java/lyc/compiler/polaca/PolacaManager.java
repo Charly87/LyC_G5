@@ -3,22 +3,24 @@ package lyc.compiler.polaca;
 import lyc.compiler.model.DataType;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 public class PolacaManager {
 
     protected static Stack<String> conditionStack = new Stack<String>();
-    protected static ArrayList<String> list = new ArrayList<String>();//la polaca en si
-    protected static Stack<Integer> stack = new Stack<Integer>();// lugares donde se debe modificar para hacer los saltos
+    protected static ArrayList<String> list = new ArrayList<String>();
+    protected static Stack<Integer> stack = new Stack<Integer>();
 
-    protected static int counter = 1;
+    public static Integer Counter;
 
     public boolean analizar(DataType t1,DataType t2){
 
         if( t1.toString().contains(t2.toString()) || t2.toString().contains(t1.toString()) )
             return true;
         else {
-            throw new Error(t1+ " y " + t2+ " Error de typo");
+            throw new Error(t1 + " y " + t2 + " Error de tipo");
         }
     }
 
@@ -49,11 +51,20 @@ public class PolacaManager {
             case "NOT":
                 operation = new NOTOperator();
                 break;
-            case "ElementInTheMiddle":
-                operation = new ElementInTheMiddle();
+            case "EITMStart":
+                operation = new EITMStart();
                 break;
-            case "ElementInTheMiddleCount":
-                operation = new ElementInTheMiddleCount();
+            case "EITMBodyStart":
+                operation = new EITMBodyStart();
+                break;
+            case "EITMBody":
+                operation = new EITMBody();
+                break;
+            case "EITMBodyEnd":
+                operation = new EITMBodyEnd();
+                break;
+            case "EITMEnd":
+                operation = new EITMEnd();
                 break;
 
             default:

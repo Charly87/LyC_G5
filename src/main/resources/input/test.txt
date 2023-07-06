@@ -1,9 +1,17 @@
 init {
+    x : Int
     a : Int
     b : Int
     c : Int
+    d : Int
+    e : Int
 }
+a = 11
+b = 22
+c = 33
+d = 44
+e = 55
 
-b = 4
-c = 8
-a = b + c
+x = ElementInTheMiddle(a,b,c,d,e)
+
+write(x)
