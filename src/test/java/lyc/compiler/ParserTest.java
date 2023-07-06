@@ -151,6 +151,11 @@ public class ParserTest {
     void whileStatement() throws Exception {
         compilationSuccessful(readFromFile("while.txt"));
     }
+    @Disabled
+    @Test
+    void elementInTheMiddle() throws Exception {
+        compilationSuccessful(readFromFile("elementinthemiddle.txt"));
+    }
 
     private void compilationSuccessful(String input) throws Exception {
         assertThat(scan(input).sym).isEqualTo(ParserSym.EOF);
@@ -169,5 +174,4 @@ public class ParserTest {
         assertThat(url).isNotNull();
         return IOUtils.toString(url.openStream(), StandardCharsets.UTF_8);
     }
-
 }

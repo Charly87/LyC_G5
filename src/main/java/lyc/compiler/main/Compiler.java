@@ -26,7 +26,7 @@ public final class Compiler {
             parser.parse();
             FileOutputWriter.writeOutput("symbol-table.txt", new SymbolTableGenerator(parser.getSymbolList()));
             FileOutputWriter.writeOutput("intermediate-code.txt", new IntermediateCodeGenerator(parser.getPolacaList()));
-            FileOutputWriter.writeOutput("final.asm", new AsmCodeGenerator());
+            FileOutputWriter.writeOutput("final.asm", new AsmCodeGenerator(parser.getAssemblerList()));
         } catch (IOException e) {
             System.err.println("There was an error trying to read input file " + e.getMessage());
             System.exit(0);

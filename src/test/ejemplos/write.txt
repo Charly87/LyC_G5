@@ -1,2 +1,5 @@
+init {
+    var1 : String
+}
 write(var1)
 write("ewr")

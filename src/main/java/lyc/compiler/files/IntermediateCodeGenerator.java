@@ -3,12 +3,12 @@ package lyc.compiler.files;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class IntermediateCodeGenerator implements FileGenerator {
-    private final ArrayList<String> polacaList;
+    private final List<String> polacaList;
 
-    public IntermediateCodeGenerator(ArrayList<String> polacaList) {
+    public IntermediateCodeGenerator(List<String> polacaList) {
         this.polacaList = polacaList;
     }
     @Override

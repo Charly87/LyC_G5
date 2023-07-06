@@ -3,14 +3,13 @@ package lyc.compiler.polaca;
 import lyc.compiler.model.DataType;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
 import java.util.Stack;
 
 public class PolacaManager {
 
     protected static Stack<String> conditionStack = new Stack<String>();
-    protected static ArrayList<String> list = new ArrayList<String>();
+    protected static List<String> polaca = new ArrayList<>();
     protected static Stack<Integer> stack = new Stack<Integer>();
 
     public static Integer Counter;
@@ -72,14 +71,14 @@ public class PolacaManager {
                 break;
         }
 
-        operation.operation(list, stack, item);
+        operation.operation(polaca, stack, item);
     }
 
      public void unstack()
     {
         int lastPos;
-        list.set(lastPos = stack.pop() - 1,"#" + (list.size()+1));
-        unstackCondition(lastPos + 1, (list.size() + 1));
+        polaca.set(lastPos = stack.pop() - 1,"#" + (polaca.size()+1));
+        unstackCondition(lastPos + 1, (polaca.size() + 1));
     }
 
     public static void unstackCondition(int lastPos, int nextPos)
@@ -87,18 +86,18 @@ public class PolacaManager {
         if(conditionStack.size() > 0 ){
             String operator = conditionStack.pop();
             if(operator == "AND"){
-                list.set(stack.pop() - 1, "#" + nextPos);
+                polaca.set(stack.pop() - 1, "#" + nextPos);
             }
 
             if(operator == "OR" ){
-                list.set(stack.pop() - 1, "#" + lastPos);
+                polaca.set(stack.pop() - 1, "#" + lastPos);
             }
         }
     }
     public void show(){
             System.out.println("*****Polaca Inversa*****");
         int i = 1;
-        for(String item : list){
+        for(String item : polaca){
             System.out.println(i + ") " + item);
             i++;
         }
@@ -107,7 +106,7 @@ public class PolacaManager {
         //stack.clear();
         //conditionStack.clear();
     }
-    public ArrayList<String> getList(){
-        return this.list;
+    public List<String> getPolacaList(){
+        return this.polaca;
     }
 }

@@ -2,6 +2,7 @@ package lyc.compiler.files;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class AsmCodeGenerator implements FileGenerator {
         this.assemblerList = assemblerList;
     }
     public AsmCodeGenerator() {
-        this.assemblerList = Collections.emptyList();
+        this.assemblerList = new ArrayList<>();
     }
 
     @Override

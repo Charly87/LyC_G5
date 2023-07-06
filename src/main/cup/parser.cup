@@ -3,17 +3,21 @@ package lyc.compiler;
 import java_cup.runtime.*;
 import lyc.compiler.model.SymbolTableManager;
 import lyc.compiler.polaca.PolacaManager;
+import lyc.compiler.assembler.AssemblerManager;
 import lyc.compiler.model.Symbol;
 import lyc.compiler.model.DataType;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 class Parser;
 
 action code
 {:
      public SymbolTableManager symbolTableManager = new SymbolTableManager();
      public PolacaManager polacaManager = new PolacaManager();
-     public ArrayList<String> varList = new ArrayList();
+     public AssemblerManager assemblerManager = new AssemblerManager();
+
+     public List<String> varList = new ArrayList<String>();
      public DataType tFactor,tExpresion,tTermino,tExpresionAux;
 :}
 
@@ -23,8 +27,12 @@ parser code
         return action_obj.symbolTableManager.getSymbolList();
     }
 
-    public ArrayList<String> getPolacaList() {
-            return action_obj.polacaManager.getList();
+    public List<String> getPolacaList() {
+        return action_obj.polacaManager.getPolacaList();
+    }
+
+    public List<String> getAssemblerList() {
+        return action_obj.assemblerManager.getAssemblerList();
     }
 :}
 
@@ -91,7 +99,7 @@ non terminal paramList;
 // Start Symbol Definition
 start with startProgram;
 
-startProgram ::= program {: polacaManager.show(); :};
+startProgram ::= program {: polacaManager.show();assemblerManager.generate(symbolTableManager.getSymbolList(), polacaManager.getPolacaList()); :};
 program  ::= sentence {: System.out.println("End"); :};
 program  ::= program sentence;
 
@@ -106,9 +114,9 @@ varType ::= STRING {: symbolTableManager.addIdentifiers(this.varList, DataType.S
 varType ::= INT {: symbolTableManager.addIdentifiers(this.varList, DataType.INTEGER); System.out.println("Type: INT"); :};
 
 sentence ::= CICLO OPEN_BRACKET {: polacaManager.insert("ET"); :} condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: polacaManager.insert("BICICLO"); :};
-sentence ::= WRITE OPEN_BRACKET CTE_STR:constant CLOSE_BRACKET {: polacaManager.insert(constant.toString()); polacaManager.insert("WRITE"); :};
-sentence ::= WRITE OPEN_BRACKET IDENTIFIER:identifier CLOSE_BRACKET {: polacaManager.insert(identifier.toString()); polacaManager.insert("WRITE");  :};
-sentence ::= READ OPEN_BRACKET IDENTIFIER:identifier  CLOSE_BRACKET {: polacaManager.insert(identifier.toString()); polacaManager.insert("READ"); :};
+sentence ::= WRITE OPEN_BRACKET CTE_STR:constant CLOSE_BRACKET {: symbolTableManager.addFactor(constant.toString(),DataType.CTE_STRING); polacaManager.insert(constant.toString()); polacaManager.insert("WRITE"); :};
+sentence ::= WRITE OPEN_BRACKET IDENTIFIER:identifier CLOSE_BRACKET {:polacaManager.insert(identifier.toString()); polacaManager.insert("WRITE");  :};
+sentence ::= READ OPEN_BRACKET IDENTIFIER:identifier  CLOSE_BRACKET {:polacaManager.insert(identifier.toString()); polacaManager.insert("READ"); :};
 sentence ::= IF OPEN_BRACKET condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: polacaManager.insert("BI"); :} ELSE OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: polacaManager.unstack(); :};
 sentence ::= IF OPEN_BRACKET condition  CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: polacaManager.unstack(); :};
 sentence ::= assignment;

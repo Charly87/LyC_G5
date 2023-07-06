@@ -1,21 +1,20 @@
 package lyc.compiler.polaca;
 
-import java.util.ArrayList;
-import java.util.Queue;
+import java.util.List;
 import java.util.Stack;
 
 public class EITMBodyStart extends ListOperation {
-    public void operation(ArrayList<String> list, Stack<Integer> stack, String item) {
-        list.add("@count");
-        list.add("1");
-        list.add("+");
-        list.add("@count");
-        list.add(":=");
-        list.add("@count");
-        stack.add(list.size());
-        list.add("#");
-        list.add("CMP");
-        list.add("BNE");
-        list.add("#" + (list.size() + 5));
+    public void operation(List<String> polaca, Stack<Integer> stack, String item) {
+        polaca.add("@count");
+        polaca.add("1");
+        polaca.add("+");
+        polaca.add("@count");
+        polaca.add(":=");
+        polaca.add("@count");
+        stack.add(polaca.size());
+        polaca.add("#");
+        polaca.add("CMP");
+        polaca.add("BNE");
+        polaca.add("#" + (polaca.size() + 5));
     }
 }

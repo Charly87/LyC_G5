@@ -14,4 +14,5 @@ e = 55
 
 x = ElementInTheMiddle(a,b,c,d,e)
 
+write("El elemento del medio es:")
 write(x)

@@ -1,6 +1,7 @@
 package lyc.compiler.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,7 +22,6 @@ public class SymbolTableManager {
     public List<Symbol> getSymbolList() {
         return symbolList;
     }
-
     public Symbol getSymbol(String name) {
 
         Iterator<Symbol> iterator = symbolList.iterator();
@@ -35,15 +35,6 @@ public class SymbolTableManager {
         /*Si el name no se encuentra en la lista, devuelve Error*/
         throw new Error(name+ " no se encuentra en SymbolTable");
     }
-    /*
-    public void addConstant(String value) {
-        this.add("_" + value, null, value, null);
-    }
-    public void addStringConstant(String value) {
-        this.add("_string" + counter++, null, value, value.length());
-    }
-    */
-
     public void addFactor(String value,DataType tipo) {
         if(!exist("_"+value))
             this.add("_" + value, tipo, value, (tipo.equals(DataType.CTE_STRING)? value.length() : null));
@@ -54,7 +45,7 @@ public class SymbolTableManager {
         else
             throw new Error(name+ " No ha sido declarada");
     }
-    public void addIdentifiers(ArrayList<String> identifiers, DataType dataType) {
+    public void addIdentifiers(List<String> identifiers, DataType dataType) {
         for(String id : identifiers) {
             if (!exist(id)) {
                 this.add(id, dataType, "-", null);
