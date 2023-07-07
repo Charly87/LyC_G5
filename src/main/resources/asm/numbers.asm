@@ -23,6 +23,7 @@ displayString                  macro  string          ;write string on screen
 ;This macro displays a $ terminated string on the screen.
 
                         pushad
+                        pushad
 
                         lea    dx, string
                         mov    ah, 9

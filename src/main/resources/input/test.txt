@@ -6,13 +6,23 @@ init {
     d : Int
     e : Int
 }
-a = 11
-b = 22
-c = 44
-d = 44
-e = 55
 
-a = a + b
+a=11
+b=22
+c=33
+d=44
+e=55
+
+write("Ingrese un valor para la variable A:")
+read(a)
+write("Ingrese un valor para la variable B:")
+read(b)
+write("Ingrese un valor para la variable C:")
+read(c)
+write("Ingrese un valor para la variable D:")
+read(d)
+write("Ingrese un valor para la variable E:")
+read(e)
 
 x = ElementInTheMiddle(a,b,c,d,e)
 

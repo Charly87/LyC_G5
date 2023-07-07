@@ -92,7 +92,15 @@ public class AssemblerManager {
                 }
                 case "READ":
                 {
-                    String op2 = operandStack.pop();
+                    String op = operandStack.pop();
+                    DataType type = this.getSymbolType(op);
+
+                    if(type == DataType.STRING)
+                        code.add("GetString " + op );
+                    if(type == DataType.INTEGER)
+                        code.add("GetInteger " + op );
+                    if(type == DataType.FLOAT)
+                        code.add("GetFloat " + op );
 
                     break;
                 }
