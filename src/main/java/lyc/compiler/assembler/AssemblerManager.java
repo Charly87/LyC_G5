@@ -256,6 +256,10 @@ public class AssemblerManager {
             cellNumber++;
         }
 
+        if(!cellNumberStack.isEmpty() && cellNumber == cellNumberStack.peek()){
+            code.add(labelQueue.remove() + ":");
+            cellNumberStack.pop();
+        }
         return code;
     }
 
