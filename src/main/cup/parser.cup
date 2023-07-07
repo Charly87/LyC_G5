@@ -14,8 +14,8 @@ class Parser;
 action code
 {:
      public SymbolTableManager symbolTableManager = new SymbolTableManager();
-     public PolacaManager polacaManager = new PolacaManager();
-     public AssemblerManager assemblerManager = new AssemblerManager();
+     public PolacaManager polacaManager = new PolacaManager(symbolTableManager);
+     public AssemblerManager assemblerManager = new AssemblerManager(symbolTableManager,polacaManager);
 
      public List<String> varList = new ArrayList<String>();
      public DataType tFactor,tExpresion,tTermino,tExpresionAux;
@@ -99,19 +99,19 @@ non terminal paramList;
 // Start Symbol Definition
 start with startProgram;
 
-startProgram ::= program {: polacaManager.show();assemblerManager.generate(symbolTableManager.getSymbolList(), polacaManager.getPolacaList()); :};
-program  ::= sentence {: System.out.println("End"); :};
+startProgram ::= program {: polacaManager.show();assemblerManager.generate(); :};
+program  ::= sentence;
 program  ::= program sentence;
 
-sentence ::= INIT OPEN_CURLY_BRACKET blockDefinition CLOSE_CURLY_BRACKET {: System.out.println("INIT Block"); :};
+sentence ::= INIT OPEN_CURLY_BRACKET blockDefinition CLOSE_CURLY_BRACKET ;
 blockDefinition ::= blockDefinition varDefinition;
 blockDefinition ::= varDefinition;
-varDefinition::= varDefinitionList COLON varType {: System.out.println("Variable Definition"); :};
-varDefinitionList ::= varDefinitionList COMMA IDENTIFIER:id {: this.varList.add(id.toString()); System.out.println("Variable: " + id.toString()); :};
-varDefinitionList ::= IDENTIFIER:id {: this.varList.add(id.toString()); System.out.println("Variable: " + id.toString()); :};
-varType ::= FLOAT {: symbolTableManager.addIdentifiers(this.varList, DataType.FLOAT); System.out.println("Type: FLOAT"); :};
-varType ::= STRING {: symbolTableManager.addIdentifiers(this.varList, DataType.STRING); System.out.println("Type: STRING"); :};
-varType ::= INT {: symbolTableManager.addIdentifiers(this.varList, DataType.INTEGER); System.out.println("Type: INT"); :};
+varDefinition::= varDefinitionList COLON varType;
+varDefinitionList ::= varDefinitionList COMMA IDENTIFIER:id {: this.varList.add(id.toString());:};
+varDefinitionList ::= IDENTIFIER:id {: this.varList.add(id.toString()); :};
+varType ::= FLOAT {: symbolTableManager.addIdentifiers(this.varList, DataType.FLOAT); :};
+varType ::= STRING {: symbolTableManager.addIdentifiers(this.varList, DataType.STRING); :};
+varType ::= INT {: symbolTableManager.addIdentifiers(this.varList, DataType.INTEGER); :};
 
 sentence ::= CICLO OPEN_BRACKET {: polacaManager.insert("ET"); :} condition CLOSE_BRACKET OPEN_CURLY_BRACKET program CLOSE_CURLY_BRACKET {: polacaManager.insert("BICICLO"); :};
 sentence ::= WRITE OPEN_BRACKET CTE_STR:constant CLOSE_BRACKET {: symbolTableManager.addFactor(constant.toString(),DataType.CTE_STRING); polacaManager.insert(constant.toString()); polacaManager.insert("WRITE"); :};
@@ -151,7 +151,7 @@ term ::= term MULT factor {: polacaManager.analizar(tTermino,tFactor); polacaMan
 term ::= term DIV factor {: polacaManager.analizar(tTermino,tFactor); polacaManager.insert("/"); :};
 term ::= factor {: tTermino=tFactor; :};
 
-factor ::= IDENTIFIER:id {: tFactor=symbolTableManager.addFactor(id.toString()); polacaManager.insert(id.toString()); :};
+factor ::= IDENTIFIER:id {: tFactor=symbolTableManager.getFactor(id.toString()); polacaManager.insert(id.toString()); :};
 factor ::= CTE_INT:constant {: symbolTableManager.addFactor(constant.toString(),DataType.CTE_INTEGER); tFactor=DataType.CTE_INTEGER;polacaManager.insert(constant.toString()); :};
 factor ::= CTE_FLOAT:constant {: symbolTableManager.addFactor(constant.toString(),DataType.CTE_FLOAT); tFactor=DataType.CTE_FLOAT;polacaManager.insert(constant.toString());:};
 factor ::= CTE_STR:constant {: symbolTableManager.addFactor(constant.toString(),DataType.CTE_STRING); tFactor=DataType.CTE_STRING;polacaManager.insert(constant.toString());:};

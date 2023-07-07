@@ -8,11 +8,21 @@ init {
 }
 a = 11
 b = 22
-c = 33
+c = 44
 d = 44
 e = 55
 
+a = a + b
+
 x = ElementInTheMiddle(a,b,c,d,e)
 
+write("El elemento del medio es:")
+write(x)
+
+x = ElementInTheMiddle(a,b,c)
+write("El elemento del medio es:")
+write(x)
+
+x = ElementInTheMiddle(a)
 write("El elemento del medio es:")
 write(x)

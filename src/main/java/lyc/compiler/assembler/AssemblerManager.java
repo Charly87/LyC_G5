@@ -1,71 +1,99 @@
 package lyc.compiler.assembler;
 import lyc.compiler.model.DataType;
 import lyc.compiler.model.Symbol;
+import lyc.compiler.model.SymbolTableManager;
+import lyc.compiler.polaca.PolacaManager;
 
 import java.util.*;
 
 public class AssemblerManager {
         List<String> assembler = new ArrayList<>();
-        public void generate(List<Symbol> symbolTable , List<String> polaca){
+        SymbolTableManager symbolaManager;
+        PolacaManager polacaManager;
+        int auxCount = 0;
+        int labelCount = 0;
+        int cellNumber = 1;
+        public AssemblerManager(SymbolTableManager symbolaManager, PolacaManager polacaManager)
+        {
+            this.symbolaManager = symbolaManager;
+            this.polacaManager = polacaManager;
+        }
+        public void generate(){
+
+            List<String> code = this.generateCode();
+            List<String> data = this.generateData();
+
+            assembler.add("include grupo2.asm");
+
             assembler.add(".MODEL LARGE");
             assembler.add(".386");
             assembler.add(".STACK 200h\n");
 
             assembler.add(".DATA\n");
-            assembler.addAll(this.generateData(symbolTable));
+            assembler.addAll(data);
 
             assembler.add("\n.CODE");
+            assembler.add("START:\n");
             assembler.add("\nMOV AX, @DATA");
             assembler.add("MOV DS, AX");
             assembler.add("MOV ES, AX\n");
-
-            assembler.addAll(this.generateCode(polaca));
+            assembler.addAll(code);
 
             assembler.add("\nMOV AX, 4C00h");
             assembler.add("INT 21h");
-            assembler.add("END");
+            assembler.add("END START");
         }
-    private List<String> generateData(List<Symbol> symbolTableList) {
+    private List<String> generateData() {
         List<String> data = new ArrayList<>();
-        for(Symbol symbol : symbolTableList){
+        for(Symbol symbol : this.symbolaManager.getSymbolList()){
             if(symbol.getType() == DataType.CTE_STRING)
-                data.add(String.format("%-20s %-5s %-30s, '$'", symbol.getName(),"dd", symbol.getValue()));
+                data.add(String.format("%-20s %-5s %-30s,'$'", symbol.getName(),"db", symbol.getValue()));
             else
                 data.add(String.format("%-20s %-5s %-30s", symbol.getName(),"dd", symbol.getValue()));
         }
+
+        for(int i=1; i <= this.auxCount ; i++)
+            data.add(String.format("%-20s %-5s %-30s", "@aux" + i,"dd", "?"));
+
+        data.add(String.format("%-20s %-5s %-30s,'$'", "_NEWLINE","db", "0DH,0AH"));
         return data;
     }
-    private List<String> generateCode(List<String> polaca) {
+    private List<String> generateCode() {
         List<String> code = new ArrayList<>();
         Stack<String> operandStack  = new Stack<String>();
         Queue<String> labelQueue  = new LinkedList<String>();
-        Stack<Integer> pilaNroCelda = new Stack<Integer>();
+        Stack<Integer> cellNumberStack = new Stack<Integer>();
 
-        int cantVariablesAuxiliares = 0;
-        int cantEtiquetas = 0;
-        int nroCelda = 1;
+        auxCount = 0;
+        labelCount = 0;
+        cellNumber = 1;
 
-        for(String cell : polaca){
+        for(String cell : this.polacaManager.getPolacaList()){
 
-            if(!pilaNroCelda.isEmpty() && nroCelda == pilaNroCelda.peek()){
+            if(!cellNumberStack.isEmpty() && cellNumber == cellNumberStack.peek()){
                 code.add(labelQueue.remove() + ":");
-                pilaNroCelda.pop();
+                cellNumberStack.pop();
             }
             switch (cell){
-                case "write":
+                case "WRITE":
                 {
                     String op = operandStack.pop();
-                    code.add("FLD " + op);
-                    code.add("");
+                    DataType type = this.getSymbolType(op);
+
+                    if(type == DataType.STRING || type == DataType.CTE_STRING)
+                        code.add("displayString " + op );
+                    if(type == DataType.INTEGER || type == DataType.CTE_INTEGER)
+                        code.add("displayInteger " + op );
+                    if(type == DataType.FLOAT || type == DataType.CTE_FLOAT)
+                        code.add("displayFloat " + op );
+
+                    code.add("displayString _NEWLINE");
                     break;
                 }
-                case "read":
+                case "READ":
                 {
                     String op2 = operandStack.pop();
-                    String op1 = operandStack.pop();
-                    code.add("FLD " + op1);
-                    code.add("FSTP " + op2);
-                    code.add("");
+
                     break;
                 }
                 case ":=":
@@ -81,8 +109,7 @@ public class AssemblerManager {
                 {
                     String op2 = operandStack.pop();
                     String op1 = operandStack.pop();
-                    String aux = "@aux" + (cantVariablesAuxiliares+1);
-                    cantVariablesAuxiliares++;
+                    String aux = "@aux" + (++auxCount);
                     code.add("FLD " + op1);
                     code.add("FLD " + op2);
                     code.add("FADD");
@@ -95,8 +122,7 @@ public class AssemblerManager {
                 {
                     String op2 = operandStack.pop();
                     String op1 = operandStack.pop();
-                    String varAux = "@aux" + (cantVariablesAuxiliares+1);
-                    cantVariablesAuxiliares++;
+                    String varAux = "@aux" + (++auxCount);
                     code.add("FLD " + op1);
                     code.add("FLD " + op2);
                     code.add("FSUB");
@@ -109,8 +135,7 @@ public class AssemblerManager {
                 {
                     String op2 = operandStack.pop();
                     String op1 = operandStack.pop();
-                    String varAux = "@aux" + (cantVariablesAuxiliares+1);
-                    cantVariablesAuxiliares++;
+                    String varAux = "@aux" + (++auxCount);
                     code.add("FLD " + op1);
                     code.add("FLD " + op2);
                     code.add("FDIV");
@@ -123,8 +148,7 @@ public class AssemblerManager {
                 {
                     String op2 = operandStack.pop();
                     String op1 = operandStack.pop();
-                    String varAux = "@aux" + (cantVariablesAuxiliares+1);
-                    cantVariablesAuxiliares++;
+                    String varAux = "@aux" + (++auxCount);
                     code.add("FLD " + op1);
                     code.add("FLD " + op2);
                     code.add("FMUL");
@@ -146,29 +170,62 @@ public class AssemblerManager {
                     break;
                 }
                 case "BLE":
+                {
+                    String label = "label" + (++labelCount);
+                    labelQueue.add(label);
+                    code.add("JNA " + label);
+                    code.add("");
+                    break;
+                }
                 case "BGE":
+                {
+                    String label = "label" + (++labelCount);
+                    labelQueue.add(label);
+                    code.add("JAE " + label);
+                    code.add("");
+                    break;
+                }
                 case "BLT":
+                {
+                    String label = "label" + (++labelCount);
+                    labelQueue.add(label);
+                    code.add("JB " + label);
+                    code.add("");
+                    break;
+                }
                 case "BGT":
+                {
+                    String label = "label" + (++labelCount);
+                    labelQueue.add(label);
+                    code.add("JA " + label);
+                    code.add("");
+                    break;
+                }
                 case "BEQ":
+                {
+                    String label = "label" + (++labelCount);
+                    labelQueue.add(label);
+                    code.add("JE " + label);
+                    code.add("");
+                    break;
+                }
                 case "BNE":
                 {
-                    String label = "label" + (cantEtiquetas+1);
-                    cantEtiquetas++;
+                    String label = "label" + (++labelCount);
                     labelQueue.add(label);
-                    code.add(cell + " " + label);
+                    code.add("JNE " + label);
                     code.add("");
                     break;
                 }
                 case "BI":
                 {
-                    code.add("BI " + labelQueue.remove());
+                    code.add("JMP " + labelQueue.remove());
                     code.add("");
                     break;
                 }
                 case "ET":
                 {
-                    String label = "label" + (cantEtiquetas+1);
-                    cantEtiquetas++;
+                    String label = "label" + (++labelCount);
                     labelQueue.add(label);
                     code.add(label + ":");
                     code.add("");
@@ -176,21 +233,47 @@ public class AssemblerManager {
                 }
                 default: {
                     if(cell.startsWith("#")){
-                        int nroCeldaSalto = Integer.parseInt(cell.substring(1));
-                        if(nroCeldaSalto >= nroCelda){
-                            pilaNroCelda.add(nroCeldaSalto);
+                        int cellJumpNumber = Integer.parseInt(cell.substring(1));
+                        if(cellJumpNumber >= cellNumber){
+                            cellNumberStack.add(cellJumpNumber);
                         }
                     }
                     else{
-                        operandStack.add(cell);
+                        String operandName = getSymbolName(cell);
+                        operandStack.add(operandName);
                     }
                     break;
                 }
             }
-            nroCelda++;
+            cellNumber++;
         }
 
         return code;
+    }
+
+
+    private String getSymbolName(String value)
+    {
+        for(Symbol s : this.symbolaManager.getSymbolList())
+        {
+            if( s.getValue().equals(value))
+            {
+                return s.getName();
+            }
+        }
+        return value;
+    }
+
+    private DataType getSymbolType(String name)
+    {
+        for(Symbol s : this.symbolaManager.getSymbolList())
+        {
+            if( s.getName().equals(name))
+            {
+                return s.getType();
+            }
+        }
+        return null;
     }
 
     public List<String> getAssemblerList(){

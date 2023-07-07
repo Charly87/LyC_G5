@@ -26,14 +26,22 @@ START:
     mov AX,@DATA
     mov DS,AX
     mov es,ax
+
+
     mov dx,OFFSET T_Ingrese_un_numero
     mov ah,9
     int 21h
+
+
     newLine 1
     GetFloat _n1
+
+
     mov dx,OFFSET T_Ingrese_otro_numero
     mov ah,9
     int 21h
+
+
     newLine 1
     GetFloat _n2
     fld _n1

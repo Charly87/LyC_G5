@@ -1,6 +1,7 @@
 package lyc.compiler.polaca;
 
 import lyc.compiler.model.DataType;
+import lyc.compiler.model.SymbolTableManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,13 +9,19 @@ import java.util.Stack;
 
 public class PolacaManager {
 
+    SymbolTableManager symbolaManager;
     protected static Stack<String> conditionStack = new Stack<String>();
     protected static List<String> polaca = new ArrayList<>();
     protected static Stack<Integer> stack = new Stack<Integer>();
 
     public static Integer Counter;
 
-    public boolean analizar(DataType t1,DataType t2){
+    public PolacaManager( SymbolTableManager symbolaManager)
+    {
+        this.symbolaManager = symbolaManager;
+    }
+
+    public boolean analizar(DataType t1, DataType t2){
 
         if( t1.toString().contains(t2.toString()) || t2.toString().contains(t1.toString()) )
             return true;
@@ -71,7 +78,7 @@ public class PolacaManager {
                 break;
         }
 
-        operation.operation(polaca, stack, item);
+        operation.operation(this.symbolaManager, this.polaca, this.stack, item);
     }
 
      public void unstack()

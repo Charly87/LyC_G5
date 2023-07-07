@@ -36,10 +36,11 @@ public class SymbolTableManager {
         throw new Error(name+ " no se encuentra en SymbolTable");
     }
     public void addFactor(String value,DataType tipo) {
-        if(!exist("_"+value))
-            this.add("_" + value, tipo, value, (tipo.equals(DataType.CTE_STRING)? value.length() : null));
+        String name = "_" + value.replaceAll("[^a-zA-Z0-9]", "_");
+        if(!exist(name))
+            this.add(name, tipo, value, (tipo.equals(DataType.CTE_STRING)? value.length() : null));
     }
-    public DataType addFactor(String name) {
+    public DataType getFactor(String name) {
         if(exist(name))
             return getSymbol(name).getType();
         else
@@ -48,7 +49,7 @@ public class SymbolTableManager {
     public void addIdentifiers(List<String> identifiers, DataType dataType) {
         for(String id : identifiers) {
             if (!exist(id)) {
-                this.add(id, dataType, "-", null);
+                this.add(id, dataType, "?", null);
             } else {
                 throw new Error("Error de sintaxis: la variable '" + id + "' ya habia sido declarada.");
             }
