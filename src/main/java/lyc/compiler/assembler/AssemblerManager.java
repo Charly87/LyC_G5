@@ -70,7 +70,7 @@ public class AssemblerManager {
 
         for(String cell : this.polacaManager.getPolacaList()){
 
-            if(!cellNumberStack.isEmpty() && cellNumber == cellNumberStack.peek()){
+            while(!cellNumberStack.isEmpty() && cellNumber == cellNumberStack.peek()){
                 code.add(labelQueue.remove() + ":");
                 cellNumberStack.pop();
             }
